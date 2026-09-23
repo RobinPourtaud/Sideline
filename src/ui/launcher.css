@@ -1,0 +1,144 @@
+:host {
+  all: initial;
+  visibility: inherit;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  width: auto;
+  height: 36px;
+  pointer-events: auto;
+  vertical-align: top;
+  color-scheme: dark;
+}
+:host([data-box-active="true"]) {
+  left: 12px;
+  right: auto;
+}
+:host([data-docked="true"]) {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: var(--control-height, 100%);
+  flex-shrink: 0;
+  pointer-events: inherit;
+}
+:host([hidden]) {
+  display: none !important;
+}
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: var(--control-width, 36px);
+  flex: 0 0 var(--control-width, 36px);
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: #0005;
+  color: #fff;
+  cursor: pointer;
+  font-size: 22px;
+  opacity: 0.9;
+}
+:host([data-docked="true"]) button {
+  background: transparent;
+}
+button:hover,
+button:focus-visible {
+  opacity: 1;
+}
+button:focus-visible {
+  outline: 2px solid #b7f5d0;
+  outline-offset: -3px;
+}
+button::before {
+  content: "";
+  position: absolute;
+  inset: 4px 0;
+  border-radius: 40px;
+  background: transparent;
+}
+button:is(:hover, :focus-visible)::before {
+  background: #ffffff1a;
+}
+button:active::before {
+  background: #ffffff33;
+}
+svg {
+  width: var(--icon-size, 20px);
+  height: var(--icon-size, 20px);
+  position: relative;
+}
+.sideline-mark {
+  width: var(--mark-size, 26px);
+  height: var(--mark-size, 26px);
+}
+@media (forced-colors: active) {
+  button {
+    border: 1px solid ButtonText;
+  }
+}
+
+button[hidden] {
+  display: none;
+}
+button[aria-pressed="true"] {
+  color: #b7f5d0;
+  opacity: 1;
+}
+@media (forced-colors: active) {
+  button[aria-pressed="true"] {
+    border-bottom: 3px solid Highlight;
+  }
+}
+
+.player-tooltip {
+  position: absolute;
+  bottom: calc(100% + 22px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(220px, calc(100vw - 32px));
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: #0000004d;
+  color: #fff;
+  font:
+    500 13px / 15px "YouTube Noto",
+    Roboto,
+    Arial,
+    Helvetica,
+    sans-serif;
+  text-shadow: 0 0 2px #000;
+  text-align: center;
+  pointer-events: auto;
+  box-shadow: none;
+}
+:host(:not([data-docked="true"])) .player-tooltip {
+  bottom: auto;
+  top: calc(100% + 8px);
+}
+.player-tooltip[hidden] {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: opacity 100ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  button::before {
+    transition: background-color 200ms cubic-bezier(0.05, 0, 0, 1);
+  }
+  .player-tooltip:not([hidden]) {
+    animation: tooltip-arrive 200ms cubic-bezier(0.05, 0, 0, 1);
+  }
+  @keyframes tooltip-arrive {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

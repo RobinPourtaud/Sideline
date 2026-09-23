@@ -1,0 +1,43 @@
+{
+  "name": "sideline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "YouTube comments, on screen.",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox --mv3",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox --mv3",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "postinstall": "wxt prepare",
+    "preview:ui": "vite --host 127.0.0.1 --port 5199 --strictPort",
+    "test:firefox-extension": "node scripts/firefox-smoke.mjs",
+    "icons": "node scripts/icons.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@biomejs/biome": "^2.5.14",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.4",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1",
+    "web-ext": "^10.6.0",
+    "wxt": "^0.21.4"
+  },
+  "overrides": {
+    "image-size": "^2.0.4"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "MIT"
+}

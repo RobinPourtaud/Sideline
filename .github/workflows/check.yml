@@ -1,0 +1,36 @@
+name: Check
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build && npm run build:firefox
+      - run: npx web-ext lint --source-dir .output/firefox-mv3 --warnings-as-errors
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run test:browser
+      - name: Install geckodriver
+        run: |
+          curl -fsSL https://github.com/mozilla/geckodriver/releases/download/v0.37.1/geckodriver-v0.37.1-linux64.tar.gz -o /tmp/geckodriver.tar.gz
+          echo "e815130ea95983e162ae91843b48d3a3ce991735635fce83a647afde21e09f7e  /tmp/geckodriver.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/geckodriver.tar.gz -C /tmp
+      - run: npm run test:firefox-extension
+        env:
+          GECKODRIVER: /tmp/geckodriver
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: |
+            playwright-report/
+            test-results/
