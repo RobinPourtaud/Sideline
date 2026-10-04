@@ -76,3 +76,32 @@ test("Lively uses more than six rows when the selected area has room", async ({ 
   await chooseControl(page, "Comment density", "Lively");
   await expect.poll(() => page.locator(".floating-comment").count()).toBeGreaterThan(6);
 });
+
+test("brand SVGs work with Trusted Types enforcement and retain source geometry", async ({
+  page,
+}) => {
+  await page.route("**/tests/fixtures/watch.html", async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({
+      response,
+      headers: {
+        ...response.headers(),
+        "content-security-policy": "require-trusted-types-for 'script'",
+      },
+    });
+  });
+  await page.goto("/tests/fixtures/watch.html");
+  await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+  await expect(page.locator(".panel")).toBeVisible();
+  const geometry = await page.evaluate(async () => {
+    const path = "/src/ui/mark.ts";
+    const { mark, birdMark } = await import(path);
+    return [mark(document), birdMark(document)].map((svg) =>
+      [...svg.querySelectorAll("path")].map((p) => p.getAttribute("d")),
+    );
+  });
+  for (const [index, asset] of ["sideline", "robin"].entries()) {
+    const source = await (await page.request.get(`/src/assets/${asset}.svg`)).text();
+    expect(geometry[index]).toEqual([...source.matchAll(/ d="([^"]+)"/g)].map((match) => match[1]));
+  }
+});

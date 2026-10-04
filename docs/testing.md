@@ -158,3 +158,15 @@ The player button now toggles the complete overlay in every display mode and ret
 The checks caught and fixed a fallback icon overlapping fullscreen controls and a tooltip still attached to the former combined control. The startup fixture now uses a served document: Chromium blocked module imports from the intercepted navigation used initially. One WebKit process closed during the theme check; a focused rerun was required. These checks use Linux browser engines, not an installed Safari extension.
 
 Final validation: 40 unit tests and 45 distinct targeted browser checks passed across the three engines, including the focused reruns. Installed Chrome and Firefox extension smoke checks passed on the rebuilt packages; TypeScript, Biome, and Firefox manifest validation also passed with no warnings.
+
+## Release-readiness fixes (2026-10-04)
+
+Added regressions for five-playback-second queue expiry, available-row Lively, collection suspension while Off, avoiding hidden chat rows, legacy preference migration, independent concurrent settings writes, and installed Chrome cross-tab updates. SVG marks now use namespaced DOM creation rather than parsing strings; a Trusted Types fixture verifies initialization and matching geometry against the original assets.
+
+TypeScript, Biome, and all 47 unit tests pass. CI on `551193d` passed all six independent jobs: Chromium, Firefox, WebKit, installed Chromium, installed Firefox, and package/build checks, including Firefox manifest validation. Run: https://github.com/RobinPourtaud/sideline/actions/runs/37193997651. The subsequent SVG change passed all four focused Chromium readiness tests locally; its complete CI result is recorded on the PR.
+
+The local combined Chromium/WebKit run passed 131 cases, skipped two installed-Chrome copies in WebKit, and had nine failures under concurrent host load; it is not a clean full-suite pass. Local Firefox could not open its temporary profile. Linux CI provides the clean cross-engine and installed-package results. These distinctions matter when reproducing the checks.
+
+The actual app bundle initialized on BT7Qs-DVTDI and jfKfPfyJRdk in Orca after the SVG change, with memory-only preferences, and was disposed afterward. Both pages exposed no chat iframe in this session. This validates page initialization and the missing-source state, not incoming real-stream messages or installed-extension execution on those pages. Fresh real-stream/fullscreen performance validation remains a manual release check.
+
+The development-only node-forge advisory remains upstream and is documented in SECURITY.md. No dependency downgrade, audit suppression, or unsupported claim of a patched toolchain was introduced.
