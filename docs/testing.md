@@ -163,10 +163,20 @@ Final validation: 40 unit tests and 45 distinct targeted browser checks passed a
 
 Added regressions for five-playback-second queue expiry, available-row Lively, collection suspension while Off, avoiding hidden chat rows, legacy preference migration, independent concurrent settings writes, and installed Chrome cross-tab updates. SVG marks now use namespaced DOM creation rather than parsing strings; a Trusted Types fixture verifies initialization and matching geometry against the original assets.
 
-TypeScript, Biome, and all 47 unit tests pass. CI on `551193d` passed all six independent jobs: Chromium, Firefox, WebKit, installed Chromium, installed Firefox, and package/build checks, including Firefox manifest validation. Run: https://github.com/RobinPourtaud/sideline/actions/runs/37193997651. The subsequent SVG change passed all four focused Chromium readiness tests locally; its complete CI result is recorded on the PR.
+TypeScript, Biome, and all 47 unit tests pass. CI on `551193d` passed all six independent jobs: Chromium, Firefox, WebKit, installed Chromium, installed Firefox, and package/build checks, including Firefox manifest validation. Run: https://github.com/RobinPourtaud/sideline/actions/runs/37193997651. The final code revision `ed70e9b`, including the SVG change, also passed all six jobs: 70 shared cases per browser (210 total), two installed Chrome tests, the installed Firefox smoke check, and build/package validation. Final run: https://github.com/RobinPourtaud/sideline/actions/runs/37194472298.
 
 The local combined Chromium/WebKit run passed 131 cases, skipped two installed-Chrome copies in WebKit, and had nine failures under concurrent host load; it is not a clean full-suite pass. Local Firefox could not open its temporary profile. Linux CI provides the clean cross-engine and installed-package results. These distinctions matter when reproducing the checks.
 
 The actual app bundle initialized on BT7Qs-DVTDI and jfKfPfyJRdk in Orca after the SVG change, with memory-only preferences, and was disposed afterward. Both pages exposed no chat iframe in this session. This validates page initialization and the missing-source state, not incoming real-stream messages or installed-extension execution on those pages. Fresh real-stream/fullscreen performance validation remains a manual release check.
 
 The development-only node-forge advisory remains upstream and is documented in SECURITY.md. No dependency downgrade, audit suppression, or unsupported claim of a patched toolchain was introduced.
+
+## Live-site follow-up (2026-10-04)
+
+The old Lofi URL `jfKfPfyJRdk` displayed “This live stream recording is not available.” YouTube linked to the current stream `rFZHOHl-L8A`; use a currently available stream when repeating this check rather than assuming a historical URL is live.
+
+On that current stream in Orca, the app bundle with memory-only preferences collected 81 messages initially. Six new source messages arrived while the native chat container had opacity zero, and the overlay grew to 87 rows. Fullscreen measured 1159px for both viewport and player/video, with a 0px reserved chat column. YouTube rebuilt the chat iframe during entry: Sideline retained its saved view, then automatically returned to “Top chat” and displayed 76 rows from the recreated source. This verifies live collection, concealment, fullscreen layout, and recovery in this browser session.
+
+This was page-context execution of the actual app bundle, not a new installed-extension test. A subsequent attempt to sample scrolling-mode load encountered incomplete YouTube page loading and then an Orca `runtime_unavailable` error. No sustained-load or new installed-browser performance pass is claimed. The injected app and sampling timer were disposed before the final reload. Installed Chrome/Firefox fixture checks remain green in the CI run above; repeat real-site long-session and scrolling-load checks in both installed browsers before release.
+
+The upstream node-forge advisory was rechecked and still lists no patched version. The existing SECURITY.md assessment remains applicable; no dependency changes were made in this follow-up.
