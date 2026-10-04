@@ -80,6 +80,11 @@ export class FloatingComments {
       this.reset();
       return;
     }
+    const area = `${this.host.clientWidth}:${this.host.clientHeight}`;
+    if (this.area !== area) {
+      this.area = area;
+      this.reset();
+    }
     const current = new Map(messages.map((message) => [commentKey(message), message]));
     const scrolling = this.scrolling(prefs);
     for (const lane of this.lanes) {
