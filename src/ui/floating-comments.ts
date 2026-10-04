@@ -1,3 +1,4 @@
+import { CommentQueue, commentKey } from "../core/comment-queue";
 import type { Message, Preferences } from "../core/types";
 import { element } from "./dom";
 import { messageContent } from "./message";
@@ -15,7 +16,9 @@ interface Lane {
 export class FloatingComments {
   readonly host = element("div", "floating-comments");
   private lanes = new Set<Lane>();
-  private pending: Message[] = [];
+  private readonly pending = new CommentQueue();
+  private playbackTime = 0;
+  private area = "";
   private timer?: ReturnType<typeof setTimeout>;
   private lastLaunch = 0;
   private seen = new Set<string>();
@@ -25,7 +28,13 @@ export class FloatingComments {
   private readonly reduced = matchMedia("(prefers-reduced-motion: reduce)");
   private latest?: { messages: Message[]; prefs: Preferences };
   private readonly motionChanged = () => this.refresh();
-  private readonly resize = new ResizeObserver(() => this.refresh());
+  private readonly resize = new ResizeObserver(() => {
+    const area = `${this.host.clientWidth}:${this.host.clientHeight}`;
+    if (area === this.area) return;
+    const initialized = Boolean(this.area);
+    this.area = area;
+    if (initialized) this.refresh();
+  });
   private readonly contentResize = new ResizeObserver((entries) => {
     const prefs = this.latest?.prefs;
     if (!prefs || !this.scrolling(prefs)) return;
@@ -71,7 +80,7 @@ export class FloatingComments {
       this.reset();
       return;
     }
-    const current = new Map(messages.map((message) => [this.key(message), message]));
+    const current = new Map(messages.map((message) => [commentKey(message), message]));
     const scrolling = this.scrolling(prefs);
     for (const lane of this.lanes) {
       const message = current.get(lane.id);
@@ -86,19 +95,21 @@ export class FloatingComments {
       lane.width = lane.node.getBoundingClientRect().width;
       if (scrolling) this.updateMotion(lane, prefs);
     }
-    this.pending = this.pending.flatMap((message) => current.get(this.key(message)) ?? []);
-    const fresh = messages.filter((message) => !this.seen.has(this.key(message)));
+    const fresh = messages.filter((message) => !this.seen.has(commentKey(message)));
     const count = this.laneCount(prefs);
     // Opening a video starts with a small preview, not the entire loaded chat history.
-    this.pending.push(...(this.seen.size && scrolling ? fresh : fresh.slice(-count)));
-    this.pending = this.pending.slice(-60);
-    for (const message of messages) this.seen.add(this.key(message));
+    this.pending.sync(
+      current,
+      this.seen.size && scrolling ? fresh : fresh.slice(-count),
+      this.playbackTime,
+    );
+    for (const message of messages) this.seen.add(commentKey(message));
     while (this.seen.size > 1000) {
       const oldest = this.seen.values().next().value;
       if (oldest !== undefined) this.seen.delete(oldest);
     }
     this.drain();
-    if (!scrolling) this.pending = [];
+    if (!scrolling) this.pending.clear();
   }
 
   private scrolling(prefs: Preferences) {
@@ -109,7 +120,10 @@ export class FloatingComments {
     const available = Math.max(0, this.host.clientHeight - 100);
     const area =
       prefs.displayStyle === "scroll" && prefs.scrollArea !== "full" ? available * 0.45 : available;
-    return Math.min(prefs.density, Math.floor(area / (prefs.overlayFontSize * 1.5 + 8)));
+    return Math.min(
+      prefs.density === 6 ? 60 : prefs.density,
+      Math.floor(area / (prefs.overlayFontSize * 1.5 + 8)),
+    );
   }
 
   private drain() {
@@ -121,6 +135,7 @@ export class FloatingComments {
     const width = this.host.clientWidth;
     const velocity = width / (prefs.speed * 1000);
     const count = this.laneCount(prefs);
+    this.pending.expire(this.playbackTime);
     while (this.pending.length && this.lanes.size < 60) {
       if (scrolling && !this.paused && performance.now() - this.lastLaunch < 180 / this.rate) break;
       let index = 0;
@@ -132,7 +147,8 @@ export class FloatingComments {
           break;
       }
       if (index === count) break;
-      const message = this.pending.shift()!;
+      const message = this.pending.take(this.playbackTime);
+      if (!message) break;
       const node = element(
         "div",
         scrolling ? "floating-comment scrolling" : "floating-comment fixed",
@@ -159,7 +175,7 @@ export class FloatingComments {
         index,
         width: textWidth,
         start: prefs.direction === "rtl" ? width : -textWidth,
-        id: this.key(message),
+        id: commentKey(message),
         content: this.contentKey(message),
       };
       if (scrolling) this.updateMotion(lane, prefs);
@@ -181,29 +197,30 @@ export class FloatingComments {
     const width = this.host.clientWidth;
     const end = prefs.direction === "rtl" ? -lane.width : width;
     const effect = lane.animation.effect as KeyframeEffect;
+    const currentTime = lane.animation.currentTime;
     effect.setKeyframes([
       { transform: `translateX(${lane.start}px)` },
       { transform: `translateX(${end}px)` },
     ]);
     effect.updateTiming({ duration: (Math.abs(end - lane.start) / width) * prefs.speed * 1000 });
+    if (currentTime !== null) lane.animation.currentTime = currentTime;
   }
 
   private contentKey(message: Message) {
     return JSON.stringify([message.text, message.parts, message.sticker]);
   }
 
-  private key(message: Message) {
-    return `${message.id}:${message.time ?? ""}`;
-  }
-
-  setPlayback(paused: boolean, rate: number) {
+  setPlayback(paused: boolean, rate: number, time = this.playbackTime) {
+    if (time < this.playbackTime) this.reset();
+    this.playbackTime = time;
+    this.pending.expire(time);
     const changed = this.paused !== paused || this.rate !== rate;
     this.paused = paused;
     this.rate = rate;
     for (const { animation } of this.lanes) {
       animation.playbackRate = rate;
-      if (paused) animation.pause();
-      else animation.play();
+      if (paused && animation.playState !== "paused") animation.pause();
+      else if (!paused && animation.playState !== "running") animation.play();
     }
     if (changed) this.drain();
   }
@@ -219,7 +236,7 @@ export class FloatingComments {
   clear() {
     clearTimeout(this.timer);
     this.timer = undefined;
-    this.pending = [];
+    this.pending.clear();
     for (const lane of this.lanes) this.remove(lane);
   }
   reset() {

@@ -1,4 +1,5 @@
 import { CommentFeed } from "../core/feed";
+import { preferenceKeys, preferencePatch } from "../core/preference-storage";
 import { defaults } from "../core/preferences";
 import { activeComments } from "../core/timestamps";
 import type { ChatSnapshot, Coverage, Message, Preferences } from "../core/types";
@@ -13,7 +14,8 @@ import { CommentCollector } from "../youtube/comments";
 export interface PreferenceStore {
   languages?: readonly string[];
   read(): Promise<Preferences>;
-  write(preferences: Preferences): Promise<void>;
+  write(preferences: Preferences, patch?: Partial<Preferences>): Promise<void>;
+  subscribe?(changed: (preferences: Preferences) => void): () => void;
 }
 
 export async function startApp(store: PreferenceStore): Promise<() => void> {
@@ -34,6 +36,19 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
   let tickSession: (() => void) | undefined;
   let saveQueue = Promise.resolve();
   let navigating = false;
+  let disposed = false;
+  let applySession: ((next: Preferences) => void) | undefined;
+  const pending = new Map<keyof Preferences, number>();
+  const unsaved = new Set<keyof Preferences>();
+  const acceptStored = (stored: Preferences) => {
+    if (disposed) return;
+    const next = { ...stored };
+    for (const key of new Set([...pending.keys(), ...unsaved]))
+      Object.assign(next, { [key]: preferences[key] });
+    if (!Object.keys(preferencePatch(preferences, next)).length) return;
+    if (applySession) applySession(next);
+    else preferences = next;
+  };
 
   const refresh = () => {
     const url = new URL(location.href);
@@ -47,6 +62,7 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
       disposeSession?.();
       disposeSession = undefined;
       tickSession = undefined;
+      applySession = undefined;
       currentId = id;
       currentVideo = video;
       currentPlayer = player;
@@ -67,6 +83,7 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
         const feed = new CommentFeed();
         const chatPresentation = new ChatPresentation();
         const render = () => {
+          if (!preferences.visible) return;
           const chatStatus = chat.available
             ? i18n.known(chat.mode)
             : chat.messages.length
@@ -93,7 +110,7 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
                 : activeComments(comments, playback.time, playback.duration),
             ),
           };
-          panel.setPlayback(playback.paused, playback.rate);
+          panel.setPlayback(playback.paused, playback.rate, playback.time);
           panel.render(state);
           panel.setAd(playback.ad);
           chatPresentation.sync(preferences.visible, chat.available);
@@ -101,23 +118,57 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
         const preloader = new CommentPreloader((state) => {
           panel.setPreloadState(state.detail);
         }, i18n);
-        const changePreferences = (next: Preferences) => {
+        const applyPreferences = (next: Preferences, local = false) => {
           const languageChanged = next.interfaceLanguage !== preferences.interfaceLanguage;
+          const translationChanged =
+            next.translationSource !== preferences.translationSource ||
+            next.translationTarget !== preferences.translationTarget;
           preferences = next;
           nativeChatVisibility.setActive(preferences.visible);
-          if (languageChanged) {
+          if (languageChanged || (!local && translationChanged)) {
+            const customizing = panel.customizing;
             i18n.setLocale(next.interfaceLanguage);
             const mount = panel.host.parentElement ?? player;
             const translation = panel.releaseTranslation();
+            if (translationChanged) translation?.stop();
             panel.dispose();
             panel = new Panel(mount, preferences, changePreferences, i18n, translation);
-            panel.openSettings(true);
+            if (preferences.visible && customizing) panel.openSettings(local);
             preloader.refreshLanguage();
-          }
+          } else panel.setPreferences(next);
+          tickSession?.();
           render();
-          preloader.sync(preferences.visible ? preferences.preloadComments : 0);
-          saveQueue = saveQueue.then(() => store.write(next)).catch(() => panel.storageError());
         };
+        const changePreferences = (next: Preferences) => {
+          const patch = preferencePatch(preferences, next);
+          const keys = preferenceKeys.filter((key) => Object.hasOwn(patch, key));
+          for (const key of keys) pending.set(key, (pending.get(key) ?? 0) + 1);
+          applyPreferences(next, true);
+          saveQueue = saveQueue
+            .then(async () => {
+              await store.write(next, patch);
+              for (const key of keys) unsaved.delete(key);
+            })
+            .catch(() => {
+              for (const key of keys) unsaved.add(key);
+              panel.storageError();
+            })
+            .finally(async () => {
+              for (const key of keys) {
+                const remaining = (pending.get(key) ?? 1) - 1;
+                if (remaining) pending.set(key, remaining);
+                else pending.delete(key);
+              }
+              if (store.subscribe && !disposed) {
+                try {
+                  acceptStored(await store.read());
+                } catch {
+                  panel.storageError();
+                }
+              }
+            });
+        };
+        applySession = (next) => applyPreferences(next);
         let panel = new Panel(player, preferences, changePreferences, i18n);
         if (storageFailed) panel.storageError();
         const chatCollector = new ChatCollector(id, (next) => {
@@ -141,6 +192,7 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
           playback = next;
           render();
         });
+        let collecting = false;
         tickSession = () => {
           const fullscreen = document.fullscreenElement;
           const mount =
@@ -150,9 +202,21 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
               ? fullscreen
               : player;
           if (!(mount instanceof HTMLVideoElement)) panel.mount(mount);
-          chatCollector.refresh();
+          if (preferences.visible) {
+            collecting = true;
+            chatCollector.refresh();
+            commentCollector.refresh();
+          } else if (collecting) {
+            collecting = false;
+            chatCollector.dispose();
+            commentCollector.dispose();
+            chat = { messages: [], available: false, mode: "" };
+            comments = [];
+            coverage = { threads: 0, references: 0, capped: false };
+            feed.reset();
+            panel.resetTimeline();
+          }
           chatPresentation.sync(preferences.visible, chat.available);
-          commentCollector.refresh();
           preloader.sync(preferences.visible ? preferences.preloadComments : 0);
         };
         disposeSession = () => {
@@ -182,7 +246,15 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
   document.addEventListener("fullscreenchange", refresh);
   window.addEventListener("popstate", refresh);
   refresh();
+  const unsubscribe = store.subscribe?.(acceptStored);
+  if (unsubscribe)
+    void store
+      .read()
+      .then(acceptStored)
+      .catch(() => {});
   return () => {
+    disposed = true;
+    unsubscribe?.();
     clearInterval(interval);
     nativeChatVisibility.dispose();
     document.removeEventListener("yt-navigate-start", navigationStart);

@@ -15,6 +15,8 @@ export class DisplaySettings {
   private readonly box = element("div");
   private readonly theme = element("div");
   private opacity?: HTMLElement;
+  private opacityInput?: HTMLInputElement;
+  private opacityOutput?: HTMLOutputElement;
   private systemTheme?: HTMLElement;
   private readonly floating = element("div");
   private readonly scrolling = element("div");
@@ -68,6 +70,10 @@ export class DisplaySettings {
       const heading = element("span", "setting-heading", this.i18n.t(label));
       const input = key === "fontSize" ? this.textSize : element("input");
       const output = key === "fontSize" ? this.sizeOutput : element("output");
+      if (key === "opacity") {
+        this.opacityInput = input;
+        this.opacityOutput = output;
+      }
       input.type = "range";
       input.min = String(min);
       input.max = String(max);
@@ -218,6 +224,11 @@ export class DisplaySettings {
 
   update(preferences: Preferences) {
     this.preferences = preferences;
+    if (this.opacityInput && this.opacityOutput) {
+      this.opacityInput.value = String(preferences.opacity);
+      this.opacityInput.style.setProperty("--fill", `${((preferences.opacity - 10) / 90) * 100}%`);
+      this.opacityOutput.textContent = `${preferences.opacity}%`;
+    }
     const floating = preferences.displayStyle !== "box";
     const size = floating ? preferences.overlayFontSize : preferences.fontSize;
     this.textSize.value = String(size);

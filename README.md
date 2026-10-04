@@ -16,15 +16,14 @@ A small, local-only browser extension that puts YouTube's loaded chat and timest
 - Independent chat/floating text sizes, background opacity, and chat-box size presets.
 - Scrolling direction, speed, area, and density controls; reduced-motion fallback.
 - Live-chat and replay messages from YouTube’s existing chat panel. Sideline opens a collapsed chat when its standard control is available, then conceals the native panel while the overlay is active. Hiding Sideline restores the native panel.
-- Pause/resume the combined comment display without pausing the video.
 - Timestamp links in loaded top-level regular comments. Comments with multiple timestamps split into sections, each appearing at its own time with its author and emoji preserved.
 - Eight-second timestamp display windows that follow forward and backward seeking.
 - Explicit loaded-comment coverage and chat-source status.
 - Optional on-device translation in browsers exposing the native Translator API.
-- Local preferences; no comment history persisted.
+- Local preferences shared across open YouTube tabs; no comment history persisted.
 - Separate Chrome and Firefox Manifest V3 builds.
 
-Automatic comment loading, replies, mobile, and Safari extension packaging are not implemented.
+Replies, mobile, and Safari extension packaging are not supported. Automatic loading is optional and defaults to Off.
 
 ## Try it
 
@@ -40,11 +39,11 @@ npm run build:firefox
 
 **Firefox:** visit `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on**, and select `.output/firefox-mv3/manifest.json`. Temporary add-ons disappear when Firefox restarts.
 
-Open or reload a YouTube watch page and select **Sideline** in YouTube’s playback controls. The same button turns the entire overlay off again; its highlighted state indicates Sideline is on. This choice is saved across videos. In floating modes, the adjacent settings button opens Customize. Sideline keeps YouTube’s chat loaded. For regular comments, scroll normally or choose **Customize → More controls → Auto-load comments**. Choose Off, 100, 300, or 500; the choice is saved and loads automatically on each video while Sideline is on. Preloading asks YouTube’s existing loader for batches without scrolling; it keeps the current sort order and does not expand replies. The result shows the actual loaded count, which can be below or slightly above your target. Both appear in one feed: chat as it arrives, timestamped comments when playback reaches their time. No account is required by Sideline.
+Open or reload a YouTube watch page and select **Sideline** in YouTube’s playback controls. The same button turns the entire overlay off again; its highlighted state indicates Sideline is on. This choice is saved across videos. In every display mode, the adjacent Sideline settings button opens Customize. Sideline keeps YouTube’s chat loaded. For regular comments, scroll normally or choose **Customize → More controls → Auto-load comments**. Choose Off, 100, 300, or 500; the choice is saved and loads automatically on each video while Sideline is on. Preloading asks YouTube’s existing loader for batches without scrolling; it keeps the current sort order and does not expand replies. The result shows the actual loaded count, which can be below or slightly above your target. Both appear in one feed: chat as it arrives, timestamped comments when playback reaches their time. No account is required by Sideline.
 
-Hover over the comments to reveal the title, controls, and loaded-comment coverage. The idle view shows only comments and fits short conversations; your saved panel height caps longer feeds. Hovering restores the full control area. Drag the title to move and the lower-right corner to resize. Both controls accept arrow keys; hold Shift for larger steps. **Customize** opens a panel beside the comments with display tiles, theme swatches, and text/background controls; **Done** or Escape closes it. On narrow players, the options sit below a compact comment preview. A small Sideline icon sits in YouTube’s playback controls and hides with them. The icon toggles Sideline on and off; floating modes have an adjacent customization icon whose tooltip includes loaded-source coverage. If the player controls are unavailable, the icons appear at the top of the video, opposite the chat box.
+Hover over the comments to reveal the title, controls, and loaded-comment coverage. The idle view shows only comments and fits short conversations; your saved panel height caps longer feeds. Hovering restores the full control area. Drag the title to move and the lower-right corner to resize. Both controls accept arrow keys; hold Shift for larger steps. **Customize** opens a panel beside the comments with display tiles, theme swatches, and text/background controls; **Done** or Escape closes it. On narrow players, the options sit below a compact comment preview. A small Sideline icon sits in YouTube’s playback controls and hides with them. The icon toggles Sideline on and off; all display modes have an adjacent Sideline settings icon. If the player controls are unavailable, the icons appear at the top of the video, opposite the chat box.
 
-The main view shows one combined comment feed. Keyboard focus also reveals controls; customization and dragging keep them visible. Touch devices keep controls available. Floating modes use the icon in YouTube’s playback controls. **More controls** contains box presets, density, direction, speed, and scrolling area. Theme swatches and display tiles support arrow-key navigation; all transitions respect reduced motion.
+Turning Sideline off suspends comment collection and clears rendered comments; turning it on rescans the loaded source. The main view shows one combined comment feed. Keyboard focus also reveals controls; customization and dragging keep them visible. Touch devices keep controls available. Floating modes use the icon in YouTube’s playback controls. **More controls** contains box presets, density, direction, speed, and scrolling area. Theme swatches and display tiles support arrow-key navigation; all transitions respect reduced motion.
 
 ## Display styles
 
@@ -55,7 +54,7 @@ The main view shows one combined comment feed. Keyboard focus also reveals contr
 | Top comments | Short, stationary lines near the top |
 | Bottom comments | Short, stationary lines above the player controls |
 
-Floating comments follow video pause and playback speed and clear on seeking. Density is limited to six lanes (fewer in a small player), with scrolling followers entering as soon as there is room in a lane. A bounded queue smooths incoming bursts; exceptionally busy moments still skip excess comments. Scrolling text completes its exit beyond the video edge; text is capped at 180 characters. Use Chat box for full text and translation originals. Reduced-motion preferences turn scrolling into stationary lines. Changing style or player size starts a fresh view of the latest loaded comments.
+Floating comments follow video pause and playback speed and clear on seeking. Quiet uses one row, Balanced uses up to three, and Lively uses all rows that fit in the selected area, with a safety cap of 60 active comments. Scrolling followers enter as soon as there is room. Queued comments are discarded at five seconds of playback age; pausing freezes age, playback speed follows the video clock, and seeking clears the queue. Crowded moments skip excess comments rather than accumulating an out-of-sync backlog. Scrolling text completes its exit beyond the video edge; text is capped at 180 characters. Use Chat box for full text and translation originals. Reduced-motion preferences turn scrolling into stationary lines. Changing style or player size starts a fresh view of the latest loaded comments.
 
 ## Interface languages
 

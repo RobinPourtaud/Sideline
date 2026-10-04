@@ -96,5 +96,7 @@ export class CommentCollector {
     this.observer?.disconnect();
     clearTimeout(this.timer);
     this.threads.clear();
+    this.root = null;
+    this.timer = undefined;
   }
 }
