@@ -104,5 +104,10 @@
   "About Sideline": "Sideline 정보",
   "Made by": "제작",
   "Visit Robin Pourtaud’s website (new tab)": "Robin Pourtaud 웹사이트 방문 (새 탭)",
-  "Sideline settings": "Sideline 설정"
+  "Sideline settings": "Sideline 설정",
+  "{count} matching chat messages": "동일한 채팅 메시지 {count}개",
+  "Likes: {count}": "좋아요: {count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "적게 모드는 반복 메시지를 + 개수로 묶고 60초 동안 기억합니다.",
+  "Balanced groups matching chat within 5 seconds with a + count.": "보통 모드는 5초 이내의 동일한 채팅을 + 개수로 묶습니다.",
+  "Lively keeps repeated chat messages separate.": "많이 모드는 반복 채팅 메시지도 개별로 표시합니다."
 }

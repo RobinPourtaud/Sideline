@@ -108,6 +108,8 @@ export async function startApp(store: PreferenceStore): Promise<() => void> {
               playback.ad || playback.seeking
                 ? []
                 : activeComments(comments, playback.time, playback.duration),
+              preferences.density,
+              performance.now() / 1000,
             ),
           };
           panel.setPlayback(playback.paused, playback.rate, playback.time);

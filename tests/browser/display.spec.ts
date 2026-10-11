@@ -64,6 +64,9 @@ test("scrolling comments use bounded lanes, pause with video, and leave controls
   await expect
     .poll(() => comments.first().evaluate((node) => node.getAnimations()[0]?.playState))
     .toBe("paused");
+  await comments.first().evaluate(async (node) => {
+    await node.getAnimations()[0]?.ready;
+  });
   const frozen = await comments.first().evaluate((node) => node.getAnimations()[0]?.currentTime);
   await page.waitForTimeout(150);
   expect(await comments.first().evaluate((node) => node.getAnimations()[0]?.currentTime)).toBe(
@@ -80,11 +83,25 @@ test("scrolling comments use bounded lanes, pause with video, and leave controls
       for (let i = 0; i < 1000; i++) {
         const message = document.createElement("yt-live-chat-text-message-renderer");
         message.id = `new-${i}`;
-        message.innerHTML =
-          '<span id="author-name">Viewer</span><span id="message">こんにちは</span>';
+        message.innerHTML = `<span id="author-name">Viewer</span><span id="message">こんにちは ${i}</span>`;
         root.append(message);
       }
     });
+  await comments.evaluateAll((nodes) => {
+    for (const node of nodes) {
+      const animation = node.getAnimations()[0]!;
+      const effect = animation.effect as KeyframeEffect;
+      const keys = effect.getKeyframes();
+      const distance =
+        new DOMMatrix(String(keys[0]!.transform)).m41 -
+        new DOMMatrix(String(keys[1]!.transform)).m41;
+      const velocity = distance / Number(effect.getTiming().duration);
+      animation.currentTime = Math.max(
+        Number(animation.currentTime),
+        (node.getBoundingClientRect().width + 48) / velocity,
+      );
+    }
+  });
   await expect.poll(() => comments.count()).toBeGreaterThan(3);
   expect(await comments.count()).toBeLessThanOrEqual(60);
   await page.getByRole("button", { name: "Sideline settings", exact: true }).click();

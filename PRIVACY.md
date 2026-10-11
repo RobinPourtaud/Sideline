@@ -6,6 +6,8 @@ It reads messages from YouTube's existing chat panel and timestamp links in regu
 
 Preferences (appearance, panel position/size, visibility, display style, motion settings, interface language, translation language choices, and automatic comment-loading target) are saved in your browser's local extension storage and update other open YouTube tabs. Comment data stays in memory for the current watch session and is discarded when that session ends. Uninstalling the extension removes its local preferences.
 
+Quiet and Balanced modes use bounded in-memory records to group repeated chat, with a count of additional observed matches. Repeat matching remembers at most 500 recent phrases and 1,000 message IDs, and resets when you hide Sideline, seek, change density, or leave the video. Like counts are read from already loaded regular comments. Neither grouping nor displaying likes performs account actions or sends data to a backend.
+
 Interface translations ship with the extension and need no network connection. Browser language is used locally to choose the default interface.
 
 Optional comment translation uses the browser’s on-device Translator API after an explicit click. The browser may download language packs from its provider; comment text is not uploaded for translation. Translations remain in a bounded memory cache for the watch session, and there is no cloud fallback.

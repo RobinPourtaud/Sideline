@@ -104,5 +104,10 @@
   "About Sideline": "Sidelineについて",
   "Made by": "制作",
   "Visit Robin Pourtaud’s website (new tab)": "Robin Pourtaudのウェブサイトを開く（新しいタブ）",
-  "Sideline settings": "Sidelineの設定"
+  "Sideline settings": "Sidelineの設定",
+  "{count} matching chat messages": "同じチャットメッセージ {count} 件",
+  "Likes: {count}": "高評価: {count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "「少なめ」では、同じメッセージを＋件数でまとめ、60秒間記憶します。",
+  "Balanced groups matching chat within 5 seconds with a + count.": "「標準」では、5秒以内の同じメッセージを＋件数でまとめます。",
+  "Lively keeps repeated chat messages separate.": "「多め」では、同じチャットメッセージも個別に表示します。"
 }

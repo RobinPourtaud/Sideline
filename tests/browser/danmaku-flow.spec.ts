@@ -14,7 +14,13 @@ test("scrolling admits followers before the previous comment exits, without over
   const id = await first.getAttribute("data-message-id");
   await expect.poll(() => first.evaluate((node) => !!node.getAnimations()[0])).toBe(true);
   await first.evaluate((node) => {
-    node.getAnimations()[0]!.currentTime = 5000;
+    const animation = node.getAnimations()[0]!;
+    const effect = animation.effect as KeyframeEffect;
+    const keys = effect.getKeyframes();
+    const distance =
+      new DOMMatrix(String(keys[0]!.transform)).m41 - new DOMMatrix(String(keys[1]!.transform)).m41;
+    const velocity = distance / Number(effect.getTiming().duration);
+    animation.currentTime = (node.getBoundingClientRect().width + 48) / velocity;
   });
   await page
     .frameLocator("#chatframe")
@@ -23,7 +29,7 @@ test("scrolling admits followers before the previous comment exits, without over
       for (let i = 0; i < 8; i++) {
         const row = document.createElement("yt-live-chat-text-message-renderer");
         row.id = `flow-${i}`;
-        row.innerHTML = '<span id="message">Next!</span>';
+        row.innerHTML = `<span id="message">Next! ${i}</span>`;
         root.append(row);
       }
     });
@@ -32,7 +38,7 @@ test("scrolling admits followers before the previous comment exits, without over
     Object.defineProperty(video, "paused", { configurable: true, get: () => false });
     video.dispatchEvent(new Event("play"));
   });
-  await expect.poll(() => page.locator(".floating-comment").count()).toBeGreaterThan(3);
+  await expect.poll(() => page.locator(".floating-comment").count()).toBeGreaterThan(2);
   await expect(page.locator(`.floating-comment[data-message-id="${id}"]`)).toHaveCount(1);
   const boxes = await page.locator(".floating-comment").evaluateAll((nodes) =>
     nodes

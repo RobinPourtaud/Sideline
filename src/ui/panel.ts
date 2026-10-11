@@ -39,7 +39,7 @@ export class Panel {
   private readonly footer = element("footer", "footer");
   private readonly settings = element("div", "settings");
   private readonly customization = element("section", "customization");
-  private readonly floating = new FloatingComments();
+  private readonly floating: FloatingComments;
   private readonly activation: Launcher;
   private readonly translationSettings = element("details", "advanced");
   private displaySettings?: DisplaySettings;
@@ -69,6 +69,7 @@ export class Panel {
     translation?: TranslationSession,
   ) {
     this.preferences = { ...preferences };
+    this.floating = new FloatingComments(this.i18n);
     this.host.lang = this.i18n.locale;
     this.host.dir = this.i18n.direction;
     const changed = () => {
