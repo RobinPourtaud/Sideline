@@ -33,6 +33,7 @@ export function readChat(document: Document): ChatSnapshot {
       id: item.id,
       author: item.querySelector("#author-name")?.textContent?.trim().slice(0, 100) || "Viewer",
       text,
+      ungrouped: item.tagName !== "YT-LIVE-CHAT-TEXT-MESSAGE-RENDERER" || undefined,
       ...readIdentity(item),
       parts: parts.some((part) => part.image) ? parts : undefined,
       sticker,

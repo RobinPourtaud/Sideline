@@ -1,6 +1,7 @@
 import { hashText } from "../core/timestamps";
 import type { Coverage, Message } from "../core/types";
 import { commentsSelector } from "./comment-preload";
+import { readLikes } from "./likes";
 import { readIdentity } from "./media";
 import { readTimedComment } from "./timed-comment";
 
@@ -55,9 +56,9 @@ export class CommentCollector {
         continue;
       }
       const { text, entries } = readTimedComment(content, this.videoId);
-      const identity = readIdentity(
-        content.closest("ytd-comment-view-model, ytd-comment-renderer") ?? thread,
-      );
+      const comment = content.closest("ytd-comment-view-model, ytd-comment-renderer") ?? thread;
+      const identity = readIdentity(comment);
+      const likes = readLikes(comment);
       const author =
         thread.querySelector("#author-text")?.textContent?.trim().slice(0, 100) || "Viewer";
       const permalink = thread.querySelector<HTMLAnchorElement>('a[href*="lc="]');
@@ -77,6 +78,7 @@ export class CommentCollector {
         entries.map((entry) => ({
           id: `${id}:${entry.time}`,
           author,
+          likes,
           ...entry,
           ...identity,
         })),
@@ -96,5 +98,7 @@ export class CommentCollector {
     this.observer?.disconnect();
     clearTimeout(this.timer);
     this.threads.clear();
+    this.root = null;
+    this.timer = undefined;
   }
 }

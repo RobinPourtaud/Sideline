@@ -11,6 +11,9 @@ export interface Message {
   author: string;
   text: string;
   time?: number;
+  repeatCount?: number;
+  likes?: string;
+  ungrouped?: boolean;
   avatar?: string;
   profileUrl?: string;
   badges?: { label: string; image?: string }[];

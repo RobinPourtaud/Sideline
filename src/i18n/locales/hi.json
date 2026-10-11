@@ -104,5 +104,10 @@
   "About Sideline": "Sideline के बारे में",
   "Made by": "निर्माता",
   "Visit Robin Pourtaud’s website (new tab)": "Robin Pourtaud की वेबसाइट खोलें (नया टैब)",
-  "Sideline settings": "Sideline सेटिंग"
+  "Sideline settings": "Sideline सेटिंग",
+  "{count} matching chat messages": "{count} एक जैसे चैट संदेश",
+  "Likes: {count}": "पसंद: {count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "कम मोड दोहराए गए संदेशों को + गिनती के साथ जोड़ता है और 60 सेकंड तक याद रखता है।",
+  "Balanced groups matching chat within 5 seconds with a + count.": "संतुलित मोड 5 सेकंड के भीतर आए एक जैसे संदेशों को + गिनती के साथ जोड़ता है।",
+  "Lively keeps repeated chat messages separate.": "ज़्यादा मोड दोहराए गए चैट संदेशों को अलग-अलग दिखाता है।"
 }

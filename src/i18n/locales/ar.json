@@ -104,5 +104,10 @@
   "About Sideline": "حول Sideline",
   "Made by": "من تطوير",
   "Visit Robin Pourtaud’s website (new tab)": "زيارة موقع Robin Pourtaud (علامة تبويب جديدة)",
-  "Sideline settings": "إعدادات Sideline"
+  "Sideline settings": "إعدادات Sideline",
+  "{count} matching chat messages": "{count} رسائل دردشة متطابقة",
+  "Likes: {count}": "الإعجابات: {count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "يجمع خيار «قليلة» الرسائل المكررة مع عدّاد + ويتذكرها لمدة 60 ثانية.",
+  "Balanced groups matching chat within 5 seconds with a + count.": "يجمع خيار «متوازنة» الرسائل المتطابقة خلال 5 ثوانٍ مع عدّاد +.",
+  "Lively keeps repeated chat messages separate.": "يعرض خيار «كثيفة» رسائل الدردشة المكررة بشكل منفصل."
 }

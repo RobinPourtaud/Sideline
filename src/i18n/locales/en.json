@@ -104,5 +104,10 @@
   "About Sideline": "About Sideline",
   "Made by": "Made by",
   "Visit Robin Pourtaud’s website (new tab)": "Visit Robin Pourtaud’s website (new tab)",
-  "Sideline settings": "Sideline settings"
+  "Sideline settings": "Sideline settings",
+  "{count} matching chat messages": "{count} matching chat messages",
+  "Likes: {count}": "Likes: {count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "Quiet groups repeats with a + count and remembers them for 60 seconds.",
+  "Balanced groups matching chat within 5 seconds with a + count.": "Balanced groups matching chat within 5 seconds with a + count.",
+  "Lively keeps repeated chat messages separate.": "Lively keeps repeated chat messages separate."
 }

@@ -146,6 +146,8 @@ test("SPA navigation disposes the old panel and prevents cross-video comments", 
 
 test("bounded chat handles bursts without duplicates", async ({ page }) => {
   await expect(page.locator("sideline-overlay .message")).toHaveCount(3);
+  await chooseControl(page, "Comment density", "Lively");
+  await page.getByRole("button", { name: "Done", exact: true }).click();
   await page.locator("sideline-overlay .panel").hover();
   await page
     .frameLocator("#chatframe")
@@ -246,7 +248,7 @@ test("a thousand-message burst stays bounded and settles without continuous rend
     for (let i = 0; i < 1000; i++) {
       const message = chat.createElement("yt-live-chat-text-message-renderer");
       message.id = `load-${i}`;
-      message.innerHTML = '<span id="author-name">A</span><span id="message">Test message</span>';
+      message.innerHTML = `<span id="author-name">A</span><span id="message">Test message ${i}</span>`;
       fragment.append(message);
     }
     chat.querySelector("#items")?.append(fragment);

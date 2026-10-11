@@ -25,7 +25,7 @@ test("display modes expose only applicable settings and retain hidden preference
     });
     await expect(
       page.getByRole("radiogroup", { name: "Comment density", exact: true }),
-    ).toBeVisible({ visible: mode !== "Chat box" });
+    ).toBeVisible();
     await expect(theme).toBeVisible({ visible: mode !== "Scrolling" });
     await expect(page.getByRole("slider", { name: "Background opacity", exact: true })).toBeVisible(
       { visible: mode !== "Scrolling" },

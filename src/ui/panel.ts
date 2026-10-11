@@ -39,16 +39,18 @@ export class Panel {
   private readonly footer = element("footer", "footer");
   private readonly settings = element("div", "settings");
   private readonly customization = element("section", "customization");
-  private readonly floating = new FloatingComments();
+  private readonly floating: FloatingComments;
   private readonly activation: Launcher;
   private readonly translationSettings = element("details", "advanced");
   private displaySettings?: DisplaySettings;
   private playbackPaused = true;
   private playbackRate = 1;
+  private playbackTime = 0;
   private readonly notice = element("p", "notice");
   private readonly observer: ResizeObserver;
   private readonly resize: HTMLButtonElement;
   private following = true;
+  private feedSize = "";
   private settingsOpen = false;
   private lastMessages = "";
   private latest?: PanelState;
@@ -67,6 +69,7 @@ export class Panel {
     translation?: TranslationSession,
   ) {
     this.preferences = { ...preferences };
+    this.floating = new FloatingComments(this.i18n);
     this.host.lang = this.i18n.locale;
     this.host.dir = this.i18n.direction;
     const changed = () => {
@@ -120,7 +123,12 @@ export class Panel {
     this.feed.addEventListener(
       "scroll",
       () => {
-        this.following = this.feed.scrollHeight - this.feed.scrollTop - this.feed.clientHeight < 48;
+        const size = `${this.feed.scrollHeight}:${this.feed.clientHeight}`;
+        if (size !== this.feedSize && this.following) this.feed.scrollTop = this.feed.scrollHeight;
+        else
+          this.following =
+            this.feed.scrollHeight - this.feed.scrollTop - this.feed.clientHeight < 48;
+        this.feedSize = size;
       },
       { passive: true },
     );
@@ -231,6 +239,14 @@ export class Panel {
     this.footer.hidden = this.settingsOpen;
     this.settings.hidden = !this.settingsOpen;
     this.feed.hidden = false;
+    if (!prefs.visible || floating) {
+      this.list.replaceChildren();
+      this.lastMessages = "";
+    }
+    if (!prefs.visible) {
+      this.floating.clear();
+      this.translation?.sync([]);
+    }
   }
 
   private layout() {
@@ -261,6 +277,17 @@ export class Panel {
   openSettings(language = false) {
     if (!this.settingsOpen) this.toggleSettings();
     if (language) this.displaySettings?.focusLanguage();
+  }
+
+  get customizing() {
+    return this.settingsOpen;
+  }
+
+  setPreferences(preferences: Preferences) {
+    this.preferences = { ...preferences };
+    if (!preferences.visible) this.settingsOpen = false;
+    this.apply();
+    this.layout();
   }
 
   private toggleSettings() {
@@ -391,7 +418,8 @@ export class Panel {
 
   render(state: PanelState) {
     this.latest = state;
-    this.floating.setPlayback(this.playbackPaused, this.playbackRate);
+    if (!this.preferences.visible) return;
+    this.floating.setPlayback(this.playbackPaused, this.playbackRate, this.playbackTime);
     this.statusText.textContent = state.status;
     this.dot.dataset.connected = String(state.connected);
     const messages = state.messages.slice(-120);
@@ -411,6 +439,7 @@ export class Panel {
       }),
       this.preferences,
     );
+    if (this.preferences.displayStyle !== "box") return;
     const signature = JSON.stringify(
       messages.map((message) => [message, this.translation?.get(message.text)]),
     );
@@ -440,10 +469,11 @@ export class Panel {
     );
   }
 
-  setPlayback(paused: boolean, rate: number) {
+  setPlayback(paused: boolean, rate: number, time = this.playbackTime) {
     this.playbackPaused = paused;
     this.playbackRate = rate;
-    this.floating.setPlayback(paused, rate);
+    this.playbackTime = time;
+    this.floating.setPlayback(paused, rate, time);
   }
 
   resetTimeline() {

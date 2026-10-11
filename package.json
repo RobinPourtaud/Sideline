@@ -1,6 +1,6 @@
 {
   "name": "sideline",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "YouTube comments, on screen.",
@@ -20,7 +20,8 @@
     "postinstall": "wxt prepare",
     "preview:ui": "vite --host 127.0.0.1 --port 5199 --strictPort",
     "test:firefox-extension": "node scripts/firefox-smoke.mjs",
-    "icons": "node scripts/icons.mjs"
+    "icons": "node scripts/icons.mjs",
+    "assets:store": "node scripts/store-assets.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -34,10 +35,19 @@
     "wxt": "^0.21.4"
   },
   "overrides": {
-    "image-size": "^2.0.4"
+    "image-size": "^2.0.4",
+    "shell-quote": "^1.12.0"
   },
   "engines": {
     "node": ">=24"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobinPourtaud/sideline.git"
+  },
+  "homepage": "https://github.com/RobinPourtaud/sideline",
+  "bugs": {
+    "url": "https://github.com/RobinPourtaud/sideline/issues"
+  }
 }

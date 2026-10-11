@@ -158,3 +158,57 @@ The player button now toggles the complete overlay in every display mode and ret
 The checks caught and fixed a fallback icon overlapping fullscreen controls and a tooltip still attached to the former combined control. The startup fixture now uses a served document: Chromium blocked module imports from the intercepted navigation used initially. One WebKit process closed during the theme check; a focused rerun was required. These checks use Linux browser engines, not an installed Safari extension.
 
 Final validation: 40 unit tests and 45 distinct targeted browser checks passed across the three engines, including the focused reruns. Installed Chrome and Firefox extension smoke checks passed on the rebuilt packages; TypeScript, Biome, and Firefox manifest validation also passed with no warnings.
+
+## Release-readiness fixes (2026-10-04)
+
+Added regressions for five-playback-second queue expiry, available-row Lively, collection suspension while Off, avoiding hidden chat rows, legacy preference migration, independent concurrent settings writes, and installed Chrome cross-tab updates. SVG marks now use namespaced DOM creation rather than parsing strings; a Trusted Types fixture verifies initialization and matching geometry against the original assets.
+
+TypeScript, Biome, and all 47 unit tests pass. CI on `551193d` passed all six independent jobs: Chromium, Firefox, WebKit, installed Chromium, installed Firefox, and package/build checks, including Firefox manifest validation. Run: https://github.com/RobinPourtaud/sideline/actions/runs/37193997651. The final code revision `ed70e9b`, including the SVG change, also passed all six jobs: 70 shared cases per browser (210 total), two installed Chrome tests, the installed Firefox smoke check, and build/package validation. Final run: https://github.com/RobinPourtaud/sideline/actions/runs/37194472298.
+
+The local combined Chromium/WebKit run passed 131 cases, skipped two installed-Chrome copies in WebKit, and had nine failures under concurrent host load; it is not a clean full-suite pass. Local Firefox could not open its temporary profile. Linux CI provides the clean cross-engine and installed-package results. These distinctions matter when reproducing the checks.
+
+The actual app bundle initialized on BT7Qs-DVTDI and jfKfPfyJRdk in Orca after the SVG change, with memory-only preferences, and was disposed afterward. Both pages exposed no chat iframe in this session. This validates page initialization and the missing-source state, not incoming real-stream messages or installed-extension execution on those pages. Fresh real-stream/fullscreen performance validation remains a manual release check.
+
+The development-only node-forge advisory remains upstream and is documented in SECURITY.md. No dependency downgrade, audit suppression, or unsupported claim of a patched toolchain was introduced.
+
+## Live-site follow-up (2026-10-04)
+
+The old Lofi URL `jfKfPfyJRdk` displayed “This live stream recording is not available.” YouTube linked to the current stream `rFZHOHl-L8A`; use a currently available stream when repeating this check rather than assuming a historical URL is live.
+
+On that current stream in Orca, the app bundle with memory-only preferences collected 81 messages initially. Six new source messages arrived while the native chat container had opacity zero, and the overlay grew to 87 rows. Fullscreen measured 1159px for both viewport and player/video, with a 0px reserved chat column. YouTube rebuilt the chat iframe during entry: Sideline retained its saved view, then automatically returned to “Top chat” and displayed 76 rows from the recreated source. This verifies live collection, concealment, fullscreen layout, and recovery in this browser session.
+
+This was page-context execution of the actual app bundle, not a new installed-extension test. A subsequent attempt to sample scrolling-mode load encountered incomplete YouTube page loading and then an Orca `runtime_unavailable` error. No sustained-load or new installed-browser performance pass is claimed. The injected app and sampling timer were disposed before the final reload. Installed Chrome/Firefox fixture checks remain green in the CI run above; repeat real-site long-session and scrolling-load checks in both installed browsers before release.
+
+The upstream node-forge advisory was rechecked and still lists no patched version. The existing SECURITY.md assessment remains applicable; no dependency changes were made in this follow-up.
+
+## Comment grouping and likes, v0.2.0 (2026-10-08)
+
+Nine new unit tests cover burst counts, unchanged snapshots, normalization, media and paid-message separation, five-second Balanced windows, sliding Quiet memory, source eviction, edits, mode changes, resets, and bounded history. Six browser cases cover forty greetings becoming one +39 badge, mode switching in Chat box, clearing memory on Off, updating each floating style without restarting animation, and live regular-comment like counts including compact/localized labels and reply exclusion. The grouped chat/settings view passed axe and box/top previews were inspected visually.
+
+Node 24 validation passed TypeScript, Biome, all 56 unit tests, Chrome and Firefox production builds, and Firefox package lint with no errors or warnings. The full Chromium/WebKit run passed 146 cases, skipped two Chrome-only cases in WebKit, and identified eight old assertions/fixtures that assumed repeats stayed separate or density was unavailable in Chat box. Those fixtures now use distinct content for layout/flow checks and expect density in every style. All 30 checks in the affected suites plus the grouping suite passed on the targeted rerun, covering all eight initial failures. Across the full run and rerun, all 154 applicable Chromium/WebKit cases passed, including the two installed Chrome checks.
+
+Firefox runtime validation remains blocked before page load by “Could not find profile folder,” including a retry with TMPDIR=/tmp. This version's grouping and like collection were tested with synthetic fixtures, not a fresh real-YouTube session. No Firefox runtime or live-site pass is claimed.
+
+## Group matching follow-up (2026-10-10)
+
+Matching now ignores Unicode punctuation and symbols in addition to case. Checks cover decorated greetings, emoji alongside text, unchanged displayed content, edits that should not increase counts, and separate symbol-only reactions. The forty-greeting browser fixture now mixes case, punctuation, and trademark symbols. All 58 unit tests, TypeScript, Biome, and 12 targeted Chromium/WebKit browser checks passed; Chrome and Firefox builds were refreshed.
+
+## Danmaku smoothness (2026-10-10)
+
+Scrolling count updates now reuse the body and badge, with reserved counter space so digit changes cannot alter the moving width. Equivalent grouped spellings retain their original wording during the pass. Player resizing preserves horizontal positions and animation clocks, adjusts speed to the new width, and admits followers using the whole comment width plus a 32px gap. Playback events no longer rewrite an unchanged animation rate, and normal feed updates use cached player dimensions.
+
+A before/after Chromium fixture probe applied 100 count updates to one paused lane. Animation keyframe writes fell from 100 to zero, playback-rate writes from 100 to zero, and geometry reads from 101 to zero. The body and width now remain unchanged. Resizing the fixture from 960px to 780px previously replaced the node and moved its x position from 880px to 780px; it now retains the node at 880px.
+
+A separate four-second running fixture delivered 400 comments with mixed case and punctuation. All three original moving comments survived with final counters +134, +133, and +133. Across 240 sampled frame intervals, the median was 16.7ms, the 95th percentile and maximum were 16.8ms, and the long-task observer reported none. This is a short synthetic Chromium measurement on the development Mac, not sustained real-YouTube performance validation.
+
+Six new unit cases and four shared browser cases cover both directions, widths from 320px to 1920px, complete long-comment exits, count growth through 99,999, unchanged animation clocks/keyframes, resize continuity, follower spacing, and avoiding replay after resize. Existing pause assertions now await the native animation's ready promise; lane tests derive clearance from measured width and velocity rather than fixed delays.
+
+TypeScript, Biome, all 64 unit tests, both production builds, and Firefox package lint passed. The complete Chromium/WebKit run passed 162 cases in one run, including installed Chrome checks; two Chrome-only copies were skipped in WebKit. Firefox runtime remains blocked by the temporary-profile error documented above. No new live-site or Firefox runtime pass is claimed.
+
+## Open-source release packaging (2026-10-11)
+
+The reviewer source ZIP was extracted into a clean temporary directory. With Node 24, npm ci and both production builds reproduced every output file byte-for-byte: 24 files for Chrome and 24 for Firefox. Both manifests report 0.2.0. Package lint reported zero errors and warnings. Seven targeted Chromium cases passed after the icon and dependency updates, including the installed Chrome checks. All 64 unit tests, TypeScript, and Biome passed again.
+
+Gitleaks 8.30.1 found no leaks in all existing Git history or the candidate release tree. The production dependency audit is clean; the remaining development-only node-forge advisory is documented in SECURITY.md. The release review is recorded in [review-2026-10-11.md](review-2026-10-11.md).
+
+The Firefox manifest no longer opts into Android compatibility, matching the documented desktop scope. The minimum Gecko version is 142 to satisfy Mozilla’s data-collection permission compatibility check without warning suppression. CI on `68e4da6` passed 80 shared cases in each of Chromium, Firefox, and WebKit, both installed Chrome cases, installed Firefox smoke, and package checks: https://github.com/RobinPourtaud/sideline/actions/runs/38119195923.

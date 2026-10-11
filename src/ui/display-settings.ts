@@ -15,8 +15,10 @@ export class DisplaySettings {
   private readonly box = element("div");
   private readonly theme = element("div");
   private opacity?: HTMLElement;
+  private opacityInput?: HTMLInputElement;
+  private opacityOutput?: HTMLOutputElement;
   private systemTheme?: HTMLElement;
-  private readonly floating = element("div");
+  private readonly densityNote = element("p", "settings-note");
   private readonly scrolling = element("div");
   private readonly motionControls = element("div");
   private readonly reduced = matchMedia("(prefers-reduced-motion: reduce)");
@@ -68,6 +70,10 @@ export class DisplaySettings {
       const heading = element("span", "setting-heading", this.i18n.t(label));
       const input = key === "fontSize" ? this.textSize : element("input");
       const output = key === "fontSize" ? this.sizeOutput : element("output");
+      if (key === "opacity") {
+        this.opacityInput = input;
+        this.opacityOutput = output;
+      }
       input.type = "range";
       input.min = String(min);
       input.max = String(max);
@@ -107,11 +113,12 @@ export class DisplaySettings {
     );
     reset.className = "text-button";
     this.box.append(reset);
-    this.group(this.floating, "Comment density", "density", [
+    this.group(advanced, "Comment density", "density", [
       ["1", "Quiet"],
       ["3", "Balanced"],
       ["6", "Lively"],
     ]);
+    advanced.append(this.densityNote);
     this.group(this.scrolling, "Scrolling area", "scrollArea", [
       ["top", "Top"],
       ["bottom", "Bottom"],
@@ -127,7 +134,6 @@ export class DisplaySettings {
       ["6", "Fast"],
     ]);
     this.scrolling.append(this.motionControls);
-    this.floating.append(this.scrolling);
     const system = button(
       this.i18n.t("Match system theme"),
       this.i18n.t("Match device theme"),
@@ -135,7 +141,7 @@ export class DisplaySettings {
     );
     system.className = "text-button";
     this.systemTheme = system;
-    advanced.append(this.box, this.floating, system);
+    advanced.append(this.box, this.scrolling, system);
     this.group(advanced, "Auto-load comments", "preloadComments", [
       ["0", "Off"],
       ["100", "100"],
@@ -218,6 +224,11 @@ export class DisplaySettings {
 
   update(preferences: Preferences) {
     this.preferences = preferences;
+    if (this.opacityInput && this.opacityOutput) {
+      this.opacityInput.value = String(preferences.opacity);
+      this.opacityInput.style.setProperty("--fill", `${((preferences.opacity - 10) / 90) * 100}%`);
+      this.opacityOutput.textContent = `${preferences.opacity}%`;
+    }
     const floating = preferences.displayStyle !== "box";
     const size = floating ? preferences.overlayFontSize : preferences.fontSize;
     this.textSize.value = String(size);
@@ -237,7 +248,13 @@ export class DisplaySettings {
     if (this.opacity) this.opacity.hidden = scrolling;
     if (this.systemTheme) this.systemTheme.hidden = scrolling;
     this.box.hidden = floating;
-    this.floating.hidden = !floating;
+    this.densityNote.textContent = this.i18n.t(
+      preferences.density === 6
+        ? "Lively keeps repeated chat messages separate."
+        : preferences.density <= 2
+          ? "Quiet groups repeats with a + count and remembers them for 60 seconds."
+          : "Balanced groups matching chat within 5 seconds with a + count.",
+    );
     this.scrolling.hidden = preferences.displayStyle !== "scroll";
   }
 }

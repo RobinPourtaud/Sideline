@@ -41,8 +41,7 @@ test("revealing controls keeps the newest messages in view", async ({ page }) =>
       for (let i = 0; i < 20; i++) {
         const message = document.createElement("yt-live-chat-text-message-renderer");
         message.id = `follow-${i}`;
-        message.innerHTML =
-          '<span id="author-name">Viewer</span><span id="message">Keep the latest message visible.</span>';
+        message.innerHTML = `<span id="author-name">Viewer</span><span id="message">Keep the latest message visible. ${i}</span>`;
         root.append(message);
       }
     });
@@ -97,8 +96,7 @@ test("idle panel fits short conversations and caps long conversations at the sav
       for (let i = 0; i < 20; i++) {
         const message = document.createElement("yt-live-chat-text-message-renderer");
         message.id = `size-${i}`;
-        message.innerHTML =
-          '<span id="author-name">Viewer</span><span id="message">A longer conversation fills the available space.</span>';
+        message.innerHTML = `<span id="author-name">Viewer</span><span id="message">A longer conversation fills the available space. ${i}</span>`;
         root.append(message);
       }
     });

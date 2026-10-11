@@ -10,13 +10,15 @@ export default defineConfig({
       "entrypoints/**",
       "public/**",
       "docs/**",
+      "scripts/**",
+      "tests/**",
       "*.md",
       "LICENSE",
       "*.json",
       "*.ts",
       ".nvmrc",
     ],
-    excludeSources: ["playwright-report/**", "test-results/**"],
+    excludeSources: ["docs/assets/**", "playwright-report/**", "test-results/**"],
   },
   manifest: ({ browser }) => ({
     name: "Sideline",
@@ -27,10 +29,9 @@ export default defineConfig({
     ...(browser === "firefox"
       ? {
           browser_specific_settings: {
-            gecko_android: { strict_min_version: "142.0" },
             gecko: {
               id: "sideline@pourtaud.dev",
-              strict_min_version: "140.0",
+              strict_min_version: "142.0",
               data_collection_permissions: { required: ["none"] },
             },
           },

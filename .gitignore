@@ -5,3 +5,13 @@ test-results/
 playwright-report/
 .DS_Store
 *.log
+
+# Local credentials and design explorations
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+design/

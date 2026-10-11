@@ -104,5 +104,10 @@
   "About Sideline": "关于 Sideline",
   "Made by": "作者",
   "Visit Robin Pourtaud’s website (new tab)": "访问 Robin Pourtaud 的网站（新标签页）",
-  "Sideline settings": "Sideline 设置"
+  "Sideline settings": "Sideline 设置",
+  "{count} matching chat messages": "{count} 条相同的聊天消息",
+  "Likes: {count}": "点赞：{count}",
+  "Quiet groups repeats with a + count and remembers them for 60 seconds.": "稀疏模式将重复消息合并并显示 + 次数，记忆持续 60 秒。",
+  "Balanced groups matching chat within 5 seconds with a + count.": "适中模式合并 5 秒内的相同聊天消息，并显示 + 次数。",
+  "Lively keeps repeated chat messages separate.": "密集模式单独显示每条重复的聊天消息。"
 }

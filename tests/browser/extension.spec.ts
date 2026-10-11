@@ -98,3 +98,56 @@ test("installed Chrome extension injects on YouTube and persists real extension 
     await context.close();
   }
 });
+
+test("installed Chrome tabs merge concurrent settings and update without reload", async ({
+  browserName,
+}) => {
+  test.skip(browserName !== "chromium", "Requires the installed Chrome extension.");
+  const extension = path.resolve(".output/chrome-mv3");
+  const context = await chromium.launchPersistentContext("", {
+    channel: "chromium",
+    headless: true,
+    args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
+  });
+  try {
+    const fixture = (await readFile("tests/fixtures/watch.html", "utf8")).replace(
+      '<script type="module" src="/tests/fixtures/watch.ts"></script>',
+      "",
+    );
+    const chat = await readFile("tests/fixtures/chat.html", "utf8");
+    await context.route("**/*", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: route.request().url().includes("chat.html") ? chat : fixture,
+      }),
+    );
+    const first = await context.newPage();
+    const second = await context.newPage();
+    await Promise.all([
+      first.goto("https://www.youtube.com/watch?v=fixture"),
+      second.goto("https://www.youtube.com/watch?v=fixture"),
+    ]);
+    await first.getByRole("button", { name: "Open Sideline", exact: true }).click();
+    await expect(
+      second.getByRole("button", { name: "Turn off Sideline", exact: true }),
+    ).toBeVisible();
+    for (const page of [first, second])
+      await page.getByRole("button", { name: "Sideline settings", exact: true }).click();
+    await Promise.all([
+      first.getByRole("radio", { name: "Sakura", exact: true }).click(),
+      second.getByRole("slider", { name: "Text size", exact: true }).fill("22"),
+    ]);
+    for (const page of [first, second]) {
+      await expect(page.locator(".panel")).toHaveAttribute("data-theme", "sakura");
+      await expect(page.getByRole("slider", { name: "Text size", exact: true })).toHaveValue("22");
+    }
+    await second.reload();
+    await expect(second.locator(".panel")).toHaveAttribute("data-theme", "sakura");
+    await expect(second.locator(".panel")).toHaveCSS("font-size", "22px");
+    await first.getByRole("button", { name: "Done", exact: true }).click();
+    await first.getByRole("button", { name: "Turn off Sideline", exact: true }).click();
+    await expect(second.getByRole("button", { name: "Open Sideline", exact: true })).toBeVisible();
+  } finally {
+    await context.close();
+  }
+});

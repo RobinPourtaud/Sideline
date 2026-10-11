@@ -45,6 +45,49 @@ export function messageContent(message: Message, className: string, limit = Infi
   return body;
 }
 
+export function messageCounts(message: Message, i18n: I18n, reserve = false) {
+  const counts = element("span", `message-counts${reserve ? " reserved" : ""}`);
+  updateMessageCounts(counts, message, i18n);
+  return counts;
+}
+
+export function updateMessageCounts(counts: HTMLElement, message: Message, i18n: I18n) {
+  for (const kind of ["repeats", "likes"] as const) {
+    const count = kind === "repeats" ? message.repeatCount : message.likes;
+    let badge = counts.querySelector<HTMLElement>(`.${kind}`);
+    if (!count) {
+      badge?.remove();
+      continue;
+    }
+    if (!badge) {
+      badge = element("span", `message-count ${kind}`);
+      badge.dir = "ltr";
+      if (kind === "likes") {
+        const icon = element("span", "like-icon", "👍");
+        icon.setAttribute("aria-hidden", "true");
+        badge.append(icon);
+      }
+      badge.append(element("span", "message-count-value"));
+      counts.append(badge);
+    }
+    const value =
+      typeof count === "number"
+        ? new Intl.NumberFormat(i18n.locale, {
+            notation:
+              counts.classList.contains("reserved") && count >= 10000 ? "compact" : "standard",
+            maximumFractionDigits: 1,
+          }).format(count)
+        : count;
+    const label = badge.querySelector(".message-count-value")!;
+    if (label.textContent !== `+${value}`) label.textContent = `+${value}`;
+    badge.title =
+      kind === "repeats"
+        ? i18n.t("{count} matching chat messages", { count: Number(count) + 1 })
+        : i18n.t("Likes: {count}", { count });
+    badge.setAttribute("aria-label", badge.title);
+  }
+}
+
 export function messageRow(
   message: Message,
   translated?: string,
@@ -84,6 +127,7 @@ export function messageRow(
   }
   if (message.time !== undefined)
     identity.append(element("span", "timestamp", formatTime(message.time)));
+  identity.append(messageCounts(message, i18n));
   main.append(identity);
   if (translated && translated !== message.text) {
     const body = element("span", "body", translated);

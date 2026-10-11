@@ -203,6 +203,32 @@ svg {
   font-size: 11px;
   color: var(--muted);
 }
+.message-counts {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.35em;
+}
+.message-counts:empty {
+  display: none;
+}
+.message-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0 0.45em;
+  border: 1px solid currentColor;
+  border-radius: 1em;
+  font-size: 0.75em;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.identity .message-counts {
+  color: var(--muted);
+}
+.like-icon {
+  font-size: 0.9em;
+}
 .empty {
   display: grid;
   align-content: center;
@@ -369,6 +395,9 @@ summary:focus-visible {
 }
 .floating-comment {
   position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
   margin: 0;
   font-size: var(--floating-size, 20px);
   font-weight: 700;
@@ -386,6 +415,21 @@ summary:focus-visible {
   left: 0;
   width: max-content;
   overflow: visible;
+  will-change: transform;
+  contain: layout style;
+}
+.floating-comment.scrolling .message-counts.reserved {
+  display: inline-flex;
+  inline-size: 7ch;
+  justify-content: flex-start;
+}
+.message-counts.reserved .message-count {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+}
+.message-counts.reserved .message-count-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .floating-comment.fixed {
   left: 50%;
@@ -393,6 +437,11 @@ summary:focus-visible {
   border-radius: 8px;
   padding: 2px 12px;
   background: rgba(17, 26, 25, var(--opacity, 0.94));
+}
+.floating-comment.fixed .floating-body {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .floating-comments[data-theme="midnight"] .fixed {
   background: rgba(17, 23, 41, var(--opacity, 0.94));
