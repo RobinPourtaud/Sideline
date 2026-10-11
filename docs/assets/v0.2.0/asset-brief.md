@@ -11,6 +11,7 @@ The photo is an original generated fictional coastal scene, used as demonstratio
 ## Sources and licensing
 
 - Product mark: `src/assets/sideline.svg` and `public/mark.svg`; MIT, Robin Pourtaud.
+- Maker bird: `robin.svg`, Robin Pourtaud’s original mark from the Pond design artifact; geometry preserved, with color inherited from each composition.
 - Typography: Quicksand, SIL Open Font License 1.1; license included in OFL.txt. Marketing only; the extension uses system fonts and does not load this font remotely.
 - Coast scene: built-in image-generation tool, generated 2026-10-11, 1672 × 941 PNG. Copied to `coast-scene.png`; no API/CLI generation or API key required.
 - Interface captures: `scripts/store-assets.mjs` and the local `tests/fixtures/watch.html` app.

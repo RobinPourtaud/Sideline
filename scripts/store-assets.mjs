@@ -10,6 +10,10 @@ const mark = (await readFile("src/assets/sideline.svg", "utf8")).replaceAll(
   "currentColor",
   "#faf8f1",
 );
+const robin = (await readFile(`${output}/robin.svg`, "utf8")).replace(
+  "<svg ",
+  '<svg aria-hidden="true" ',
+);
 const icon = (await readFile("public/mark.svg")).toString("base64");
 const references = new Map([
   [`data:font/ttf;base64,${font}`, "quicksand.ttf"],
@@ -226,8 +230,8 @@ try {
     "readme-hero",
     1600,
     800,
-    `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">Made by Robin · Open source</div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v0.2.0</span></div></div>`,
-    ".copy{position:absolute;left:78px;top:62px}.brand{font-size:31px}.brand img{width:44px;height:44px}.intro{margin-top:60px;color:#3F9290}h1{font-size:96px;line-height:1.03;letter-spacing:-4px;margin:23px 0 28px}p{font-size:25px}.tags{font:12px system-ui;letter-spacing:1.5px;margin-top:28px;color:#46636A}.maker{font:14px system-ui;margin-top:52px;color:#46636A}.visual{position:absolute;left:630px;top:225px;width:1020px}.capture{border-radius:22px}.visual-caption{display:flex;justify-content:space-between;padding:25px 75px 0 5px;color:#46636A;font-size:19px}.visual-caption span:last-child{font:13px system-ui;padding-top:4px}",
+    `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong> · Open source</span></div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v0.2.0</span></div></div>`,
+    ".copy{position:absolute;left:78px;top:62px}.brand{font-size:31px}.brand img{width:44px;height:44px}.intro{margin-top:60px;color:#3F9290}h1{font-size:96px;line-height:1.03;letter-spacing:-4px;margin:23px 0 28px}p{font-size:25px}.tags{font:12px system-ui;letter-spacing:1.5px;margin-top:28px;color:#46636A}.maker{display:flex;align-items:center;gap:8px;font:14px system-ui;margin-top:44px;color:#46636A}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}.visual{position:absolute;left:630px;top:225px;width:1020px}.capture{border-radius:22px}.visual-caption{display:flex;justify-content:space-between;padding:25px 75px 0 5px;color:#46636A;font-size:19px}.visual-caption span:last-child{font:13px system-ui;padding-top:4px}",
   );
   const art = (small) =>
     `<div class="art ${small ? "small" : "wide"}"><div class="video"></div><div class="ribbon r1"><i></i><b></b><b></b></div><div class="ribbon r2"><i></i><b></b><b></b></div><div class="ribbon r3"><i></i><b></b><b></b></div></div>`;
@@ -243,8 +247,8 @@ try {
     "promo-marquee",
     1400,
     560,
-    `<div class="identity">${mark}<span>Sideline</span></div><h1>Comments,<br>in the picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="maker">Made by Robin</div>${art(false)}`,
-    `${artCss}body{background:#103E45;color:#FAF8F1}.identity{position:absolute;top:55px;left:64px;display:flex;align-items:center;gap:15px;font-size:32px;font-weight:650}.identity svg{width:40px;height:40px}h1{position:absolute;top:128px;left:64px;font-size:70px;letter-spacing:-2.5px;line-height:1.08;margin:0}p{position:absolute;top:317px;left:68px;color:#DCEAE2;font-size:22px}.maker{position:absolute;left:68px;bottom:54px;font:14px system-ui;color:#DCEAE2}`,
+    `<div class="identity">${mark}<span>Sideline</span></div><h1>Comments,<br>in the picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong></span></div>${art(false)}`,
+    `${artCss}body{background:#103E45;color:#FAF8F1}.identity{position:absolute;top:55px;left:64px;display:flex;align-items:center;gap:15px;font-size:32px;font-weight:650}.identity svg{width:40px;height:40px}h1{position:absolute;top:128px;left:64px;font-size:70px;letter-spacing:-2.5px;line-height:1.08;margin:0}p{position:absolute;top:317px;left:68px;color:#DCEAE2;font-size:22px}.maker{position:absolute;left:68px;bottom:46px;display:flex;align-items:center;gap:8px;font:14px system-ui;color:#DCEAE2}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}`,
   );
   await exportLayout(
     "social-preview",
