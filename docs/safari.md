@@ -55,3 +55,7 @@ The wrapper uses bundle IDs `dev.pourtaud.sideline` and `dev.pourtaud.sideline.E
 - Real-site inspection exposed YouTube’s CSP blocking script-tag injection. After switching to registered MAIN-world content scripts and restarting Safari, the page had one bridge listener and automatic loading fetched 120 regular comments for a 100-comment target (YouTube batches can overshoot). The packaged background/bridge regression test also passed in WebKit.
 - Type checking and formatting pass. All 64 unit tests, 80 shared WebKit browser cases, and the additional Safari packaged-bridge case pass. The 25 web resources in the signed extension bundle matched the Safari build byte-for-byte.
 - Chrome and Firefox rebuild successfully with their existing main-world bridge and no Safari-only web-accessible resources.
+
+### Store packaging — October 13, 2026
+
+The 0.2.1 Release archive builds for both Intel and Apple Silicon. Safari uses separate localized extension names capped at 40 characters, as required by Apple’s upload validation. Chrome and Firefox keep their longer titles. The refreshed Mac icons and five screenshots use the approved smaller leaf. The planned App Store price is US $1.99 as a one-time purchase; the source, Chrome, and Firefox remain free. App Store submission and native fullscreen validation are still pending.

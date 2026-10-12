@@ -4,5 +4,8 @@
   },
   "extensionName": {
     "message": "Sideline — YouTube 영상 위로 흐르는 댓글"
+  },
+  "safariExtensionName": {
+    "message": "Sideline — YouTube 댓글"
   }
 }

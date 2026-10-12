@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
 test("Safari's packaged background registers the page bridge once and bounds continuation requests", async ({
@@ -7,6 +7,13 @@ test("Safari's packaged background registers the page bridge once and bounds con
   test.skip(testInfo.project.name !== "webkit", "Safari-specific packaged bridge");
   const output = ".output/safari-mv3";
   const manifest = JSON.parse(await readFile(`${output}/manifest.json`, "utf8"));
+  const nameKey = manifest.name.slice(6, -2);
+  for (const locale of await readdir(`${output}/_locales`)) {
+    const messages = JSON.parse(
+      await readFile(`${output}/_locales/${locale}/messages.json`, "utf8"),
+    );
+    expect(messages[nameKey].message.length).toBeLessThanOrEqual(40);
+  }
   expect(manifest.minimum_chrome_version).toBeUndefined();
   expect(manifest.content_scripts.every((script: { world?: string }) => !script.world)).toBe(true);
   expect(manifest.web_accessible_resources).toBeUndefined();

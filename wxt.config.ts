@@ -27,7 +27,7 @@ export default defineConfig({
     ],
   },
   manifest: ({ browser }) => ({
-    name: "__MSG_extensionName__",
+    name: browser === "safari" ? "__MSG_safariExtensionName__" : "__MSG_extensionName__",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
     permissions: ["storage"],

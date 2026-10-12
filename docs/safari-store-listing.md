@@ -1,13 +1,13 @@
 # Safari App Store listing
 
-- App name: Sideline
+- App name: Sideline: Danmaku for YouTube
 - Subtitle: YouTube comments, on screen
 - Platform: macOS
-- Version: 0.2.1 (build 1)
+- Version: 0.2.1 (build 2)
 - Bundle ID: dev.pourtaud.sideline
 - SKU: sideline-macos
 - Primary language: English (US)
-- Price: Free
+- Price: US $1.99, one-time purchase (localized by Apple)
 - Primary category: Utilities
 - Support URL: https://pourtaud.dev/projects/sideline/
 - Marketing URL: https://pourtaud.dev/projects/sideline/
