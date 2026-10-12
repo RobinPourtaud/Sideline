@@ -27,7 +27,7 @@ export default defineConfig({
     ],
   },
   manifest: ({ browser }) => ({
-    name: "Sideline",
+    name: "__MSG_extensionName__",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
     permissions: ["storage"],

@@ -47,9 +47,11 @@ The README and store artwork live in `docs/assets/v0.2.0`, outside the extension
 npm run preview:ui
 # In another terminal:
 npm run assets:store
+# Export all ten supported languages:
+npm run assets:store:all
 ```
 
-The original demonstration scene and licensed font are committed, so this export needs no image-generation API. The asset brief records provenance. `npm run icons` regenerates the extension icons from the original SVG mark.
+The original demonstration scene and licensed font are committed, so this export needs no image-generation API. English exports stay in the asset root; the other languages and the review gallery live in `docs/assets/v0.2.0/localized`. Captures use the actual interface catalogs and localized synthetic comments. `scripts/store-locales.mjs` contains the adapted marketing copy. Layout exports reject canvas overflow. The asset brief records provenance. `npm run icons` regenerates the extension icons from the SVG mark; `npm run icons:safari` updates the Mac icon catalog and setup-app image.
 
 ## Safari for Mac
 

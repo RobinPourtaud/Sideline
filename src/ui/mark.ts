@@ -22,7 +22,8 @@ function base(document: Document, size: number) {
 export function mark(document: Document): SVGSVGElement {
   const svg = base(document, 64);
   svg.classList.add("sideline-mark");
-  svg.append(
+  const leaf = node(document, "g", { transform: "translate(6.4 6.4) scale(.8)" });
+  leaf.append(
     node(document, "path", {
       d: "M10 54c3-10 1-21 10-31C30 12 44 10 55 11c1 14-3 27-13 33-9 6-20 3-32 10Z",
       stroke: "currentColor",
@@ -36,6 +37,7 @@ export function mark(document: Document): SVGSVGElement {
       "stroke-linecap": "round",
     }),
   );
+  svg.append(leaf);
   return svg;
 }
 

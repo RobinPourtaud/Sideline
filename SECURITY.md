@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately through [GitHub’s vulnerability reporting](https://github.com/RobinPourtaud/sideline/security/advisories/new), or email **robin@pourtaud.dev** if that option is unavailable. Include the affected version, reproduction steps, and impact. Do not put credentials or private chat data in a public issue.
+Please report security issues privately through [GitHub’s vulnerability reporting](https://github.com/RobinPourtaud/sideline/security/advisories/new), or email **sideline@pourtaud.dev** if that option is unavailable. Include the affected version, reproduction steps, and impact. Do not put credentials or private chat data in a public issue.
 
 ## Runtime scope
 

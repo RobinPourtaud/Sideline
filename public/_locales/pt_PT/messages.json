@@ -1,5 +1,8 @@
 {
   "extensionDescription": {
     "message": "Comentários do YouTube, na tela."
+  },
+  "extensionName": {
+    "message": "Sideline — Chat e comentários no YouTube"
   }
 }

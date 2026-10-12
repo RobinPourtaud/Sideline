@@ -2,7 +2,7 @@
 
 ## Title
 
-Sideline
+Sideline — Danmaku & Comments for YouTube
 
 ## Summary
 
@@ -60,3 +60,7 @@ Source archive build steps: Node.js 24+, `npm ci`, `npm run build:firefox`. BUIL
 ## Review state
 
 The repository and GitHub release can be published independently. Store assets and packages are prepared for Robin’s review before store submission unless Robin explicitly requests submission. Store approval and public availability are separate from saving a draft.
+
+## Support contact
+
+Use **sideline@pourtaud.dev** for extension support and store review correspondence. Keep publisher-account and Git attribution emails unchanged.

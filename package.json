@@ -1,6 +1,6 @@
 {
   "name": "sideline",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "description": "YouTube comments, on screen.",
@@ -24,7 +24,8 @@
     "assets:store": "node scripts/store-assets.mjs",
     "build:safari": "wxt build -b safari --mv3",
     "zip:safari": "wxt zip -b safari --mv3",
-    "icons:safari": "node scripts/safari-icons.mjs"
+    "icons:safari": "node scripts/safari-icons.mjs",
+    "assets:store:all": "node scripts/store-assets-all.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
