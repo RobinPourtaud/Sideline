@@ -59,3 +59,5 @@ The wrapper uses bundle IDs `dev.pourtaud.sideline` and `dev.pourtaud.sideline.E
 ### Store packaging — October 13, 2026
 
 The 0.2.1 Release archive builds for both Intel and Apple Silicon. Safari uses separate localized extension names capped at 40 characters, as required by Apple’s upload validation. Chrome and Firefox keep their longer titles. The refreshed Mac icons and five screenshots use the approved smaller leaf. The planned App Store price is US $1.99 as a one-time purchase; the source, Chrome, and Firefox remain free. App Store submission and native fullscreen validation are still pending.
+
+The current physical Mac check also confirmed that Sideline’s chat-box empty state stays visible when entering YouTube player fullscreen. This verifies overlay placement; live message delivery in fullscreen and native video-only fullscreen still need separate coverage. Apple extracted the approved smaller-leaf icon from build 2. The draft listing includes five screenshots, the Data Not Collected privacy declaration, and the reviewer setup instructions. Paid distribution is waiting on the owner’s bank and tax information.
