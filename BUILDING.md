@@ -51,4 +51,8 @@ npm run assets:store
 npm run assets:store:all
 ```
 
-The original demonstration scene and licensed font are committed, so this export needs no image-generation API. English exports stay in the asset root; the other languages and the review gallery live in `docs/assets/v0.2.0/localized`. Captures use the actual interface catalogs and localized synthetic comments. `scripts/store-locales.mjs` contains the adapted marketing copy. Layout exports reject canvas overflow. The asset brief records provenance. `npm run icons` regenerates the extension icons from the SVG mark.
+The original demonstration scene and licensed font are committed, so this export needs no image-generation API. English exports stay in the asset root; the other languages and the review gallery live in `docs/assets/v0.2.0/localized`. Captures use the actual interface catalogs and localized synthetic comments. `scripts/store-locales.mjs` contains the adapted marketing copy. Layout exports reject canvas overflow. The asset brief records provenance. `npm run icons` regenerates the extension icons from the SVG mark; `npm run icons:safari` updates the Mac icon catalog and setup-app image.
+
+## Safari for Mac
+
+Run `npm run build:safari`, then build the Sideline scheme in `safari/Sideline/Sideline.xcodeproj` on My Mac. Select your development team for both targets. See [docs/safari.md](docs/safari.md) for setup, signing, resource updates, limitations, and release preparation. `npm run zip:safari` produces the web resources, not an installable Mac app.

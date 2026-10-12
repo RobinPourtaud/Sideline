@@ -1,0 +1,120 @@
+:root {
+  color-scheme: light;
+  font:
+    15px -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: #faf8f1;
+  color: #103e45;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+main {
+  max-width: 760px;
+  margin: auto;
+  padding: 40px;
+}
+header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.9px;
+  margin: 6px 0;
+}
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  font-weight: 650;
+  color: #46636a;
+  margin: 0;
+}
+.intro {
+  font-size: 18px;
+  color: #46636a;
+  margin: 24px 0;
+}
+#state {
+  line-height: 1.5;
+  min-height: 44px;
+}
+button {
+  font: inherit;
+  font-weight: 600;
+  background: #103e45;
+  color: #faf8f1;
+  border: 0;
+  padding: 13px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+button:hover {
+  background: #24555b;
+}
+:focus-visible {
+  outline: 3px solid #3f9290;
+  outline-offset: 4px;
+}
+ol {
+  margin: 28px 0;
+  padding-left: 23px;
+}
+li {
+  padding: 8px 0 8px 5px;
+  line-height: 1.5;
+}
+li span {
+  display: block;
+  color: #46636a;
+  font-size: 14px;
+}
+.note {
+  color: #46636a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+nav {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+a {
+  color: #103e45;
+  text-underline-offset: 4px;
+  padding-block: 8px;
+}
+footer {
+  border-top: 1px solid #dceae2;
+  padding-top: 18px;
+  color: #46636a;
+  font-size: 12px;
+}
+@media (max-width: 520px) {
+  main {
+    padding: 24px;
+  }
+  header {
+    align-items: flex-start;
+  }
+  h1 {
+    font-size: 24px;
+  }
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+footer svg {
+  width: 28px;
+  height: 28px;
+}

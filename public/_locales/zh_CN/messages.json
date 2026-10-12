@@ -4,5 +4,8 @@
   },
   "extensionName": {
     "message": "Sideline — YouTube 弹幕与评论"
+  },
+  "safariExtensionName": {
+    "message": "Sideline — YouTube 弹幕"
   }
 }

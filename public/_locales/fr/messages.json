@@ -4,5 +4,8 @@
   },
   "extensionName": {
     "message": "Sideline — Commentaires défilants pour YouTube"
+  },
+  "safariExtensionName": {
+    "message": "Sideline — Commentaires YouTube"
   }
 }

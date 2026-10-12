@@ -14,7 +14,7 @@
 
 Follow the conversation while you watch. Sideline brings live chat, replay chat, and timestamped comments into the video, as smooth scrolling danmaku, a movable chat box, or quiet lines at the top or bottom.
 
-A small, local-first extension for desktop Chrome and Firefox. No Sideline account, backend, analytics, or comment uploads.
+A small, local-first extension for desktop Chrome and Firefox. A [Mac Safari development preview](docs/safari.md) is available to build from source. No Sideline account, backend, analytics, or comment uploads.
 
 <p align="center">
   <a href="https://github.com/RobinPourtaud/sideline/releases/latest"><strong>Download v0.2.1</strong></a> ·
