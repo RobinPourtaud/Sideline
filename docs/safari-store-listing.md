@@ -59,7 +59,8 @@ No Sideline login is required. YouTube may require an account to play particular
 
 Only storage, scripting, and the www.youtube.com host are requested. A Safari background registers a fixed packaged MAIN-world bridge for the existing comment loader. There is no backend, analytics, posting, native messaging, or remote runtime code. Preferences remain local; repeat matching is bounded in memory.
 
-Source and build documentation: https://github.com/RobinPourtaud/Sideline
+Source and build documentation: https://github.com/RobinPourtaud/Sideline/tree/feat/safari
+Requires Safari 16.4 or later. Installed checks use Safari 27 on a physical Mac.
 Support and review contact: sideline@pourtaud.dev
 
 ## Screenshot provenance
