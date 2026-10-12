@@ -3,6 +3,7 @@ import { relative, resolve } from "node:path";
 import { chromium } from "@playwright/test";
 import { storeLocales } from "./store-locales.mjs";
 
+const version = JSON.parse(await readFile("package.json", "utf8")).version;
 const locale = process.env.SIDELINE_ASSET_LOCALE || "en";
 const copy = storeLocales[locale];
 if (!copy) throw new Error(`Unsupported asset locale: ${locale}`);
@@ -293,7 +294,7 @@ try {
       "readme-hero",
       1600,
       800,
-      `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong> · Open source</span></div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v0.2.0</span></div></div>`,
+      `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong> · Open source</span></div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v${version}</span></div></div>`,
       ".copy{position:absolute;left:78px;top:62px}.brand{font-size:31px}.brand img{width:44px;height:44px}.intro{margin-top:60px;color:#3F9290}h1{font-size:96px;line-height:1.03;letter-spacing:-4px;margin:23px 0 28px}p{font-size:25px}.tags{font:12px system-ui;letter-spacing:1.5px;margin-top:28px;color:#46636A}.maker{display:flex;align-items:center;gap:8px;font:14px system-ui;margin-top:44px;color:#46636A}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}.visual{position:absolute;left:630px;top:225px;width:1020px}.capture{border-radius:22px}.visual-caption{display:flex;justify-content:space-between;padding:25px 75px 0 5px;color:#46636A;font-size:19px}.visual-caption span:last-child{font:13px system-ui;padding-top:4px}",
     );
   }

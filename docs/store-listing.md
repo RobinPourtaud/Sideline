@@ -1,4 +1,4 @@
-# Sideline v0.2.0 — store listing
+# Sideline v0.2.1 — store listing
 
 ## Title
 
@@ -46,6 +46,10 @@ Screenshots show the actual Sideline interface with synthetic comments over an o
 - Support: https://github.com/RobinPourtaud/sideline/issues
 - Privacy: https://github.com/RobinPourtaud/sideline/blob/main/PRIVACY.md
 - Source: https://github.com/RobinPourtaud/sideline
+
+## Localization
+
+Use `store-titles.json` and `store-descriptions.json` for natural localized copy. The extension manifest supplies localized names from `public/_locales`. The five numbered screenshots in each `assets/v0.2.0/localized/<locale>` folder include actual translated UI and localized synthetic comments; English stays in the asset root. A separate `pt_PT` set adapts European Portuguese marketing copy while showing the shared Portuguese UI. Chrome and Edge support language-specific screenshot sets. Firefox uses shared screenshot images and localized captions.
 
 ## Images
 
