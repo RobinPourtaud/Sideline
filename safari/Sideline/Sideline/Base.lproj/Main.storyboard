@@ -102,7 +102,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="760" height="720"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
-                            <wkWebView wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eOr-cG-IQY">
+                            <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eOr-cG-IQY">
                                 <rect key="frame" x="0.0" y="0.0" width="760" height="720"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -111,6 +111,12 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="eOr-cG-IQY" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" id="pin-left"/>
+                            <constraint firstItem="eOr-cG-IQY" firstAttribute="trailing" secondItem="m2S-Jp-Qdl" secondAttribute="trailing" id="pin-right"/>
+                            <constraint firstItem="eOr-cG-IQY" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" id="pin-top"/>
+                            <constraint firstItem="eOr-cG-IQY" firstAttribute="bottom" secondItem="m2S-Jp-Qdl" secondAttribute="bottom" id="pin-bottom"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="webView" destination="eOr-cG-IQY" id="GFe-mU-dBY"/>
