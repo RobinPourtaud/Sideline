@@ -11,6 +11,7 @@ export default defineConfig({
       "public/**",
       "docs/**",
       "scripts/**",
+      "safari/**",
       "tests/**",
       "*.md",
       "LICENSE",
@@ -18,7 +19,12 @@ export default defineConfig({
       "*.ts",
       ".nvmrc",
     ],
-    excludeSources: ["docs/assets/**", "playwright-report/**", "test-results/**"],
+    excludeSources: [
+      "docs/assets/**",
+      "playwright-report/**",
+      "test-results/**",
+      "safari/**/xcuserdata/**",
+    ],
   },
   manifest: ({ browser }) => ({
     name: "Sideline",
@@ -36,6 +42,11 @@ export default defineConfig({
             },
           },
         }
-      : { minimum_chrome_version: "120" }),
+      : browser === "safari"
+        ? {
+            permissions: ["storage", "scripting"],
+            host_permissions: ["https://www.youtube.com/*"],
+          }
+        : { minimum_chrome_version: "120" }),
   }),
 });

@@ -21,7 +21,10 @@
     "preview:ui": "vite --host 127.0.0.1 --port 5199 --strictPort",
     "test:firefox-extension": "node scripts/firefox-smoke.mjs",
     "icons": "node scripts/icons.mjs",
-    "assets:store": "node scripts/store-assets.mjs"
+    "assets:store": "node scripts/store-assets.mjs",
+    "build:safari": "wxt build -b safari --mv3",
+    "zip:safari": "wxt zip -b safari --mv3",
+    "icons:safari": "node scripts/safari-icons.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

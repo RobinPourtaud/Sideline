@@ -50,3 +50,7 @@ npm run assets:store
 ```
 
 The original demonstration scene and licensed font are committed, so this export needs no image-generation API. The asset brief records provenance. `npm run icons` regenerates the extension icons from the original SVG mark.
+
+## Safari for Mac
+
+Run `npm run build:safari`, then build the Sideline scheme in `safari/Sideline/Sideline.xcodeproj` on My Mac. Select your development team for both targets. See [docs/safari.md](docs/safari.md) for setup, signing, resource updates, limitations, and release preparation. `npm run zip:safari` produces the web resources, not an installable Mac app.

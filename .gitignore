@@ -15,3 +15,8 @@ playwright-report/
 *.p12
 *.pfx
 design/
+
+# Local Xcode state
+safari/**/xcuserdata/
+safari/**/DerivedData/
+.xcodebuildmcp/
