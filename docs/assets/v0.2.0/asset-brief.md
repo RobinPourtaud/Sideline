@@ -2,7 +2,13 @@
 
 ## Direction
 
-Cream #FAF8F1, petrol #103E45, teal #3F9290, celadon #DCEAE2, lily #C5D880, and apricot #E6B491. Quicksand branding, generous spacing, and a consistent headline structure. Sideline’s existing Leafline mark is preserved exactly; the 128px store icon now has 16px transparent padding around its 96px mark.
+Cream #FAF8F1, petrol #103E45, teal #3F9290, celadon #DCEAE2, lily #C5D880, and apricot #E6B491. Quicksand branding, generous spacing, and a consistent headline structure. The approved Leafline leaf is scaled to 80% around its center across app icons, player controls, and marketing compositions. Backgrounds and click targets keep their original dimensions. The 128px store icon has 16px transparent padding around its 96px background.
+
+## Localization
+
+Five numbered screenshots are generated for each of the ten supported interface languages: English, French, Spanish, German, Portuguese, Japanese, Korean, Simplified Chinese, Hindi, and Arabic. English stays in this directory; the other sets live in `localized/<locale>`. `localized/index.html` is the combined review gallery. Each set includes adapted headings, synthetic comments, provenance labels, and the actual localized UI. Arabic compositions use right-to-left layout. System font fallbacks render scripts outside Quicksand’s character coverage. Proper names remain unchanged.
+
+Run `npm run assets:store:all` with the preview server running. Localized small promotional and marquee tiles are exported alongside every set. A separate European Portuguese marketing and sample-comment set lives in `localized/pt_PT`, bringing the total to 55 screenshots. Both Portuguese variants capture the extension’s existing shared Portuguese interface catalog.
 
 The screenshots show actual Sideline UI from the synthetic browser fixture, with the same production source code. Font size, theme, position, and opacity are ordinary supported preferences. Scrolling animation clocks are paused at chosen positions for capture. Synthetic chat supplies +39 repeat counts; a loaded synthetic timestamped comment supplies the +128 like count. No private transcripts or third-party video screenshots are used.
 

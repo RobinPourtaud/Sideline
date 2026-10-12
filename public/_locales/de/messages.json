@@ -1,5 +1,8 @@
 {
   "extensionDescription": {
     "message": "YouTube-Kommentare, direkt im Bild."
+  },
+  "extensionName": {
+    "message": "Sideline — YouTube-Kommentare direkt im Video"
   }
 }

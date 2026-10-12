@@ -17,7 +17,7 @@ Follow the conversation while you watch. Sideline brings live chat, replay chat,
 A small, local-first extension for desktop Chrome and Firefox. No Sideline account, backend, analytics, or comment uploads.
 
 <p align="center">
-  <a href="https://github.com/RobinPourtaud/sideline/releases/latest"><strong>Download v0.2.0</strong></a> ·
+  <a href="https://github.com/RobinPourtaud/sideline/releases/latest"><strong>Download v0.2.1</strong></a> ·
   <a href="docs/usage.md">User guide</a> ·
   <a href="https://github.com/RobinPourtaud/sideline/issues">Report a bug</a> ·
   <a href="CONTRIBUTING.md">Contribute</a>
@@ -40,7 +40,7 @@ A small, local-first extension for desktop Chrome and Firefox. No Sideline accou
   </tr>
 </table>
 
-All captures use the real interface and synthetic comments over an original demonstration scene. They are not live YouTube transcripts.
+All captures use the real interface and synthetic comments over an original demonstration scene. They are not live YouTube transcripts. [Browse localized screenshots](docs/assets/v0.2.0/localized/index.html).
 
 ## Install
 
@@ -51,7 +51,7 @@ Get the browser ZIP from [the latest release](https://github.com/RobinPourtaud/s
 | Chrome / Chromium | Open `chrome://extensions`, enable **Developer mode**, select **Load unpacked**, and choose the extracted Chrome folder. |
 | Firefox | Open `about:debugging#/runtime/this-firefox`, select **Load Temporary Add-on**, and choose `manifest.json` in the extracted Firefox folder. This installation lasts until Firefox restarts. |
 
-Store updates are being prepared. The existing [Chrome listing](https://chromewebstore.google.com/detail/sideline/momopedapmmddfbgchhiicmniendfkgk) is currently limited to testers; the GitHub download is available independently. Unsigned Firefox release ZIPs are intended for temporary installation or development, not permanent installation in standard Firefox.
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/sideline/momopedapmmddfbgchhiicmniendfkgk). Firefox availability follows Mozilla’s review process; the GitHub download is available independently. Unsigned Firefox release ZIPs are intended for temporary installation or development, not permanent installation in standard Firefox.
 
 Open or reload a YouTube watch page, then select the **Sideline** icon in the playback controls. The adjacent settings button opens Customize. See the [user guide](docs/usage.md) for controls, repeat handling, fullscreen, translation, and optional comment loading.
 

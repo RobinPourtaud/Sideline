@@ -1,24 +1,33 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { relative, resolve } from "node:path";
 import { chromium } from "@playwright/test";
+import { storeLocales } from "./store-locales.mjs";
 
-const output = resolve("docs/assets/v0.2.0");
+const version = JSON.parse(await readFile("package.json", "utf8")).version;
+const locale = process.env.SIDELINE_ASSET_LOCALE || "en";
+const copy = storeLocales[locale];
+if (!copy) throw new Error(`Unsupported asset locale: ${locale}`);
+const interfaceLocale = copy.interfaceLocale || locale;
+const assets = resolve("docs/assets/v0.2.0");
+const output = locale === "en" ? assets : resolve(assets, "localized", locale);
+await mkdir(output, { recursive: true });
+const catalog = JSON.parse(await readFile(`src/i18n/locales/${interfaceLocale}.json`, "utf8"));
 const baseUrl = process.env.SIDELINE_ASSET_BASE_URL || "http://127.0.0.1:5199";
-const font = (await readFile(`${output}/quicksand.ttf`)).toString("base64");
-const scene = (await readFile(`${output}/coast-scene.png`)).toString("base64");
+const font = (await readFile(`${assets}/quicksand.ttf`)).toString("base64");
+const scene = (await readFile(`${assets}/coast-scene.png`)).toString("base64");
 const mark = (await readFile("src/assets/sideline.svg", "utf8")).replaceAll(
   "currentColor",
   "#faf8f1",
 );
-const robin = (await readFile(`${output}/robin.svg`, "utf8")).replace(
+const robin = (await readFile(`${assets}/robin.svg`, "utf8")).replace(
   "<svg ",
   '<svg aria-hidden="true" ',
 );
 const icon = (await readFile("public/mark.svg")).toString("base64");
 const references = new Map([
-  [`data:font/ttf;base64,${font}`, "quicksand.ttf"],
-  [`data:image/png;base64,${scene}`, "coast-scene.png"],
-  [`data:image/svg+xml;base64,${icon}`, "../../../public/mark.svg"],
+  [`data:font/ttf;base64,${font}`, relative(output, `${assets}/quicksand.ttf`)],
+  [`data:image/png;base64,${scene}`, relative(output, `${assets}/coast-scene.png`)],
+  [`data:image/svg+xml;base64,${icon}`, relative(output, resolve("public/mark.svg"))],
 ]);
 const browser = await chromium.launch({ channel: "chromium" });
 const stories = [
@@ -51,6 +60,9 @@ const stories = [
     label: "CUSTOMIZE YOUR VIEW",
   },
 ];
+for (const [index, story] of stories.entries()) {
+  [story.title, story.detail, story.label] = copy.stories[index];
+}
 
 async function capture(
   story,
@@ -60,11 +72,13 @@ async function capture(
   const page = await browser.newPage({
     viewport: { width: 1200, height: 700 },
     deviceScaleFactor: 1,
+    locale: copy.language,
   });
   await page.addInitScript(
     (preferences) => localStorage.setItem("sideline", JSON.stringify(preferences)),
     {
       visible: false,
+      interfaceLanguage: interfaceLocale,
       displayStyle: story.style,
       theme,
       density: 3,
@@ -78,61 +92,79 @@ async function capture(
     },
   );
   await page.goto(`${baseUrl}/tests/fixtures/watch.html`);
-  await page.getByRole("button", { name: "Open Sideline", exact: true }).waitFor();
+  await page.getByRole("button", { name: catalog["Open Sideline"], exact: true }).waitFor();
   await page.addStyleTag({
     content: `main{max-width:none;width:1200px;margin:0;padding:0}#movie_player{width:1152px;max-width:none;height:500px;background-image:url(data:image/png;base64,${scene});background-size:cover;background-position:center}body>header,main>.eyebrow,#fullscreen{display:none}.scene{padding:22px;justify-content:end}.scene span{font:11px system-ui;letter-spacing:.4px;color:white;width:max-content;background:#103e45cc;padding:6px 10px;border-radius:4px}`,
   });
-  await page.locator(".scene").evaluate((node) => {
+  await page.locator(".scene").evaluate((node, demo) => {
     node.replaceChildren();
     const label = document.createElement("span");
-    label.textContent = "DEMO SCENE · SYNTHETIC COMMENTS";
+    label.textContent = demo;
     node.append(label);
-  });
+  }, copy.demo);
   await page
     .frameLocator("#chatframe")
     .locator("#items")
-    .evaluate((root, style) => {
-      root.replaceChildren();
-      const lines =
-        style === "scroll"
-          ? [
-              ["Mika", "What a view"],
-              ["Sam", "That light ✨"],
-              ["Ari", "Hello from Kyoto 👋"],
-            ]
-          : [
-              ["Mika", "What a view"],
-              ["Sam", "That light ✨"],
-              ["Ari", "Hello from Kyoto 👋"],
-              ["Lee", "This is my kind of afternoon."],
-            ];
-      let index = 0;
-      for (const [author, text] of lines) {
-        const repeats = text === "What a view" ? 40 : 1;
-        for (let i = 0; i < repeats; i++) {
-          const message = root.ownerDocument.createElement("yt-live-chat-text-message-renderer");
-          message.id = `demo-${index++}`;
-          for (const [id, value] of [
-            ["author-name", author],
-            ["message", i % 2 ? "WHAT A VIEW!" : text],
-          ]) {
-            const span = root.ownerDocument.createElement("span");
-            span.id = id;
-            span.textContent = value;
-            message.append(span);
+    .evaluate(
+      (root, { style, comments }) => {
+        root.replaceChildren();
+        const lines =
+          style === "scroll"
+            ? [
+                ["Mika", comments[0]],
+                ["Sam", comments[1]],
+                ["Ari", comments[2]],
+              ]
+            : [
+                ["Mika", comments[0]],
+                ["Sam", comments[1]],
+                ["Ari", comments[2]],
+                ["Lee", comments[3]],
+              ];
+        let index = 0;
+        for (const [author, text] of lines) {
+          const repeats = text === comments[0] ? 40 : 1;
+          for (let i = 0; i < repeats; i++) {
+            const message = root.ownerDocument.createElement("yt-live-chat-text-message-renderer");
+            message.id = `demo-${index++}`;
+            for (const [id, value] of [
+              ["author-name", author],
+              ["message", i % 2 ? `${text.toLocaleUpperCase()}!` : text],
+            ]) {
+              const span = root.ownerDocument.createElement("span");
+              span.id = id;
+              span.textContent = value;
+              message.append(span);
+            }
+            root.append(message);
           }
-          root.append(message);
         }
-      }
-      if (style === "bottom") root.replaceChildren();
-    }, story.style);
+        if (style === "bottom") root.replaceChildren();
+      },
+      { style: story.style, comments: copy.comments },
+    );
   if (story.style === "bottom") {
-    await page.locator("ytd-comments").evaluate((root) => {
-      root.innerHTML =
-        '<ytd-comment-thread-renderer><span id="author-text">Mika</span><span id="content-text"><a href="https://www.youtube.com/watch?v=fixture&t=0s">0:00</a> The light on the water is everything.</span><span id="vote-count-middle">128</span></ytd-comment-thread-renderer>';
-    });
+    await page.locator("ytd-comments").evaluate((root, text) => {
+      const thread = document.createElement("ytd-comment-thread-renderer");
+      for (const [id, value] of [
+        ["author-text", "Mika"],
+        ["content-text", text],
+        ["vote-count-middle", "128"],
+      ]) {
+        const span = document.createElement("span");
+        span.id = id;
+        if (id === "content-text") {
+          const timestamp = document.createElement("a");
+          timestamp.href = "https://www.youtube.com/watch?v=fixture&t=0s";
+          timestamp.textContent = "0:00";
+          span.append(timestamp, ` ${value}`);
+        } else span.textContent = value;
+        thread.append(span);
+      }
+      root.replaceChildren(thread);
+    }, copy.timed);
   }
-  await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+  await page.getByRole("button", { name: catalog["Open Sideline"], exact: true }).click();
   const comment = page.locator(story.style === "box" ? ".message" : ".floating-comment");
   await comment.first().waitFor();
   if (story.style === "scroll") {
@@ -145,8 +177,8 @@ async function capture(
       }
     });
   } else if (story.file === "04-customize") {
-    await page.getByRole("button", { name: "Sideline settings", exact: true }).click();
-    await page.getByRole("button", { name: "Done", exact: true }).waitFor();
+    await page.getByRole("button", { name: catalog["Sideline settings"], exact: true }).click();
+    await page.getByRole("button", { name: catalog.Done, exact: true }).waitFor();
   } else if (story.style === "box") {
     await page.locator(".panel").hover();
   }
@@ -177,12 +209,43 @@ const common = `@font-face{font-family:Quicksand;src:url(data:font/ttf;base64,${
 
 async function exportLayout(name, width, height, html, css = "") {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
-  const source = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Sideline · ${name}</title><style>${common}${css}</style><body>${html}</body></html>`;
+  const source = `<!doctype html><html lang="${copy.language}" dir="${copy.direction}"><meta charset="utf-8"><title>Sideline · ${name}</title><style>${common}${css}</style><body>${html}</body></html>`;
   let editable = source;
   for (const [data, file] of references) editable = editable.replaceAll(data, file);
-  await writeFile(`${output}/${name}.html`, editable);
   await page.setContent(source);
   await page.evaluate(() => document.fonts.ready);
+  if (/^0[1-5]-/.test(name)) {
+    const sizes = await page.evaluate(() => {
+      const sizes = {};
+      for (const selector of ["h1", "main>p"]) {
+        const node = document.querySelector(selector);
+        let size = Number.parseFloat(getComputedStyle(node).fontSize);
+        while (node.getBoundingClientRect().height > size * 1.6 && size > 16) {
+          node.style.fontSize = `${--size}px`;
+        }
+        sizes[selector] = size;
+      }
+      return sizes;
+    });
+    const fitted = Object.entries(sizes)
+      .map(([selector, size]) => `${selector}{font-size:${size}px}`)
+      .join("");
+    editable = editable.replace("</style>", `${fitted}</style>`);
+    const overflow = await page.evaluate(
+      () => document.body.scrollHeight > innerHeight || document.body.scrollWidth > innerWidth,
+    );
+    if (overflow) {
+      const layout = await page.evaluate(() =>
+        Array.from(document.querySelectorAll("main,h1,p,.capture,.grid,.footer")).map((node) => ({
+          element: node.className || node.tagName,
+          height: node.getBoundingClientRect().height,
+          bottom: node.getBoundingClientRect().bottom,
+        })),
+      );
+      throw new Error(`Layout overflow: ${locale}/${name}: ${JSON.stringify(layout)}`);
+    }
+  }
+  await writeFile(`${output}/${name}.html`, editable);
   await page.screenshot({ path: `${output}/${name}.png`, omitBackground: false });
   await page.close();
 }
@@ -201,8 +264,8 @@ try {
       story.file,
       1280,
       800,
-      `<main><div class="top">${brand}<span class="eyebrow">${story.label}</span></div><h1>${story.title}</h1><p>${story.detail}</p><img class="capture" src="${await embeddedCapture(file)}" alt="Real Sideline interface"><div class="footer"><span>YouTube comments, on screen.</span><span>${String(index + 1).padStart(2, "0")} / 05 · Actual interface / demo scene</span></div></main>`,
-      "main{padding:34px 64px}.capture{margin-top:24px}.footer{margin-top:19px}h1{font-size:58px}",
+      `<main><div class="top">${brand}<span class="eyebrow">${story.label}</span></div><h1>${story.title}</h1><p>${story.detail}</p><img class="capture" src="${await embeddedCapture(file)}" alt="Sideline"><div class="footer"><span>${copy.tagline}</span><span><bdi>${String(index + 1).padStart(2, "0")} / 05</bdi> · ${copy.evidence}</span></div></main>`,
+      "main{padding:30px 64px}.capture{margin-top:24px}.footer{margin-top:19px}h1{font-size:58px}",
     );
   }
   const themes = [
@@ -215,24 +278,26 @@ try {
   for (const [name, theme] of themes) {
     const file = await capture(stories[1], theme, `-${theme}`);
     cards.push(
-      `<div><img class="capture" src="${await embeddedCapture(file)}" alt="${name} theme"><strong>${name}</strong></div>`,
+      `<div><img class="capture" src="${await embeddedCapture(file)}" alt="${catalog[name]}"><strong>${catalog[name]}</strong></div>`,
     );
   }
   await exportLayout(
     "05-themes",
     1280,
     800,
-    `<main><div class="top">${brand}<span class="eyebrow">FOUR THEMES</span></div><h1>Feel at home.</h1><p>Forest, Paper, Midnight, or Sakura. Your view, your choice.</p><div class="grid">${cards.join("")}</div><div class="footer"><span>YouTube comments, on screen.</span><span>05 / 05 · Actual interface / demo scene</span></div></main>`,
-    "main{padding:34px 64px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;max-width:1020px;margin:24px auto 0}.grid img{border-radius:10px}.grid strong{display:block;font-size:17px;margin-top:9px}.footer{margin-top:20px}h1{font-size:58px}",
+    `<main><div class="top">${brand}<span class="eyebrow">${copy.stories[4][2]}</span></div><h1>${copy.stories[4][0]}</h1><p>${copy.stories[4][1]}</p><div class="grid">${cards.join("")}</div><div class="footer"><span>${copy.tagline}</span><span><bdi>05 / 05</bdi> · ${copy.evidence}</span></div></main>`,
+    "main{padding:30px 64px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;max-width:920px;margin:24px auto 0}.grid img{border-radius:10px}.grid strong{display:block;font-size:17px;margin-top:9px}.footer{margin-top:20px}h1{font-size:58px}",
   );
   const scrolling = await embeddedCapture("capture-01-scrolling.png");
-  await exportLayout(
-    "readme-hero",
-    1600,
-    800,
-    `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong> · Open source</span></div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v0.2.0</span></div></div>`,
-    ".copy{position:absolute;left:78px;top:62px}.brand{font-size:31px}.brand img{width:44px;height:44px}.intro{margin-top:60px;color:#3F9290}h1{font-size:96px;line-height:1.03;letter-spacing:-4px;margin:23px 0 28px}p{font-size:25px}.tags{font:12px system-ui;letter-spacing:1.5px;margin-top:28px;color:#46636A}.maker{display:flex;align-items:center;gap:8px;font:14px system-ui;margin-top:44px;color:#46636A}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}.visual{position:absolute;left:630px;top:225px;width:1020px}.capture{border-radius:22px}.visual-caption{display:flex;justify-content:space-between;padding:25px 75px 0 5px;color:#46636A;font-size:19px}.visual-caption span:last-child{font:13px system-ui;padding-top:4px}",
-  );
+  if (locale === "en") {
+    await exportLayout(
+      "readme-hero",
+      1600,
+      800,
+      `<div class="copy">${brand}<div class="eyebrow intro">YOUTUBE COMMENTS, ON SCREEN.</div><h1>Comments,<br>in the<br>picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="tags">LIVE CHAT · REPLAYS · TIMED REACTIONS</div><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong> · Open source</span></div></div><div class="visual"><img class="capture" src="${scrolling}" alt="Sideline scrolling demo"><div class="visual-caption"><span>Quiet when you want it. Lively when you don’t.</span><span>v${version}</span></div></div>`,
+      ".copy{position:absolute;left:78px;top:62px}.brand{font-size:31px}.brand img{width:44px;height:44px}.intro{margin-top:60px;color:#3F9290}h1{font-size:96px;line-height:1.03;letter-spacing:-4px;margin:23px 0 28px}p{font-size:25px}.tags{font:12px system-ui;letter-spacing:1.5px;margin-top:28px;color:#46636A}.maker{display:flex;align-items:center;gap:8px;font:14px system-ui;margin-top:44px;color:#46636A}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}.visual{position:absolute;left:630px;top:225px;width:1020px}.capture{border-radius:22px}.visual-caption{display:flex;justify-content:space-between;padding:25px 75px 0 5px;color:#46636A;font-size:19px}.visual-caption span:last-child{font:13px system-ui;padding-top:4px}",
+    );
+  }
   const art = (small) =>
     `<div class="art ${small ? "small" : "wide"}"><div class="video"></div><div class="ribbon r1"><i></i><b></b><b></b></div><div class="ribbon r2"><i></i><b></b><b></b></div><div class="ribbon r3"><i></i><b></b><b></b></div></div>`;
   const artCss = `.art{position:absolute}.video{position:absolute;background:url(data:image/png;base64,${scene}) center/cover;box-shadow:0 20px 50px #061d2366;border:1px solid #ffffff40;border-radius:18px}.ribbon{position:absolute;background:#FAF8F1;color:#103E45;box-shadow:0 8px 24px #061d2330;border-radius:35px;height:56px;width:230px;padding:16px 24px 16px 64px}.ribbon i{position:absolute;left:20px;top:15px;width:26px;height:26px;background:#3F9290;border-radius:50%}.ribbon b{display:block;height:5px;width:100%;background:#103E45;border-radius:6px}.ribbon b+b{width:65%;margin-top:9px;opacity:.45}.r2{background:#DCEAE2}.r2 i{background:#E6B491}.r3{background:#C5D880}.small{left:56px;top:112px;width:340px;height:160px}.small .video{left:25px;top:8px;width:280px;height:134px;border-radius:12px}.small .ribbon{height:35px;width:143px;padding:10px 13px 10px 38px;box-shadow:0 5px 15px #061d2340}.small .ribbon i{left:12px;top:10px;width:15px;height:15px}.small .ribbon b{height:3px}.small .ribbon b+b{margin-top:6px}.small .r1{left:2px;top:1px}.small .r2{left:180px;top:54px}.small .r3{left:65px;top:113px}.wide{left:690px;top:60px;width:670px;height:440px}.wide .video{left:40px;top:30px;width:575px;height:350px}.wide .r1{left:0;top:75px}.wide .r2{left:400px;top:185px}.wide .r3{left:70px;top:310px}`;
@@ -247,23 +312,25 @@ try {
     "promo-marquee",
     1400,
     560,
-    `<div class="identity">${mark}<span>Sideline</span></div><h1>Comments,<br>in the picture.</h1><p>Follow the conversation.<br>Stay with the video.</p><div class="maker">${robin}<span>Made by <strong>Robin Pourtaud</strong></span></div>${art(false)}`,
-    `${artCss}body{background:#103E45;color:#FAF8F1}.identity{position:absolute;top:55px;left:64px;display:flex;align-items:center;gap:15px;font-size:32px;font-weight:650}.identity svg{width:40px;height:40px}h1{position:absolute;top:128px;left:64px;font-size:70px;letter-spacing:-2.5px;line-height:1.08;margin:0}p{position:absolute;top:317px;left:68px;color:#DCEAE2;font-size:22px}.maker{position:absolute;left:68px;bottom:46px;display:flex;align-items:center;gap:8px;font:14px system-ui;color:#DCEAE2}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}`,
+    `<div class="identity">${mark}<span>Sideline</span></div><h1>${copy.headline}</h1><p>${copy.follow}</p><div class="maker">${robin}<span>${copy.maker} <strong>Robin Pourtaud</strong></span></div>${art(false)}`,
+    `${artCss}body{background:#103E45;color:#FAF8F1}.identity{position:absolute;top:55px;left:64px;display:flex;align-items:center;gap:15px;font-size:32px;font-weight:650}.identity svg{width:40px;height:40px}h1{position:absolute;top:128px;left:64px;width:610px;font-size:${locale === "fr" ? 56 : 64}px;letter-spacing:-2px;line-height:1.15;margin:0}p{position:absolute;top:317px;left:68px;color:#DCEAE2;font-size:22px}.maker{position:absolute;left:68px;bottom:46px;display:flex;align-items:center;gap:8px;font:14px system-ui;color:#DCEAE2}.maker svg{width:32px;height:32px;flex:none}.maker strong{font-weight:600}[dir=rtl] .identity,[dir=rtl] h1{left:auto;right:64px}[dir=rtl] p,[dir=rtl] .maker{left:auto;right:68px}[dir=rtl] .wide{left:40px}`,
   );
-  await exportLayout(
-    "social-preview",
-    1280,
-    640,
-    `<div class="copy">${brand}<h1>Comments,<br>in the picture.</h1><p>YouTube live chat and timed reactions.<br>Local processing. Open source.</p></div><img class="capture" src="${scrolling}" alt="Real Sideline demo">`,
-    ".copy{position:absolute;left:62px;top:58px}.brand{font-size:28px}h1{font-size:76px;line-height:1.1;margin-top:65px}p{font-size:21px;margin-top:25px}.capture{position:absolute;left:595px;top:205px;width:830px}",
-  );
+  if (locale === "en") {
+    await exportLayout(
+      "social-preview",
+      1280,
+      640,
+      `<div class="copy">${brand}<h1>Comments,<br>in the picture.</h1><p>YouTube live chat and timed reactions.<br>Local processing. Open source.</p></div><img class="capture" src="${scrolling}" alt="Real Sideline demo">`,
+      ".copy{position:absolute;left:62px;top:58px}.brand{font-size:28px}h1{font-size:76px;line-height:1.1;margin-top:65px}p{font-size:21px;margin-top:25px}.capture{position:absolute;left:595px;top:205px;width:830px}",
+    );
+  }
   const preview = [
     ...stories.map((story) => [story.file, story.title]),
-    ["05-themes", "Four themes"],
-    ["readme-hero", "README hero"],
-    ["promo-small", "Small promotional tile"],
-    ["promo-marquee", "Marquee promotional tile"],
-    ["social-preview", "GitHub social preview"],
+    ["05-themes", copy.stories[4][0]],
+    ...(locale === "en" ? [["readme-hero", "README hero"]] : []),
+    ["promo-small", "Sideline"],
+    ["promo-marquee", copy.tagline],
+    ...(locale === "en" ? [["social-preview", "GitHub social preview"]] : []),
   ];
   await writeFile(
     `${output}/index.html`,
