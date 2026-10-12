@@ -49,7 +49,12 @@ class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHan
         } else {
             decisionHandler(.cancel)
             if url.scheme == "https", ["www.youtube.com", "github.com", "pourtaud.dev"].contains(url.host ?? "") {
-                NSWorkspace.shared.open(url)
+                if url.host == "www.youtube.com",
+                   let safari = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Safari") {
+                    NSWorkspace.shared.open([url], withApplicationAt: safari, configuration: NSWorkspace.OpenConfiguration())
+                } else {
+                    NSWorkspace.shared.open(url)
+                }
             }
         }
     }
