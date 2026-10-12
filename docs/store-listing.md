@@ -1,8 +1,8 @@
-# Sideline v0.2.0 — store listing
+# Sideline v0.2.1 — store listing
 
 ## Title
 
-Sideline
+Sideline — Danmaku & Comments for YouTube
 
 ## Summary
 
@@ -47,6 +47,10 @@ Screenshots show the actual Sideline interface with synthetic comments over an o
 - Privacy: https://github.com/RobinPourtaud/sideline/blob/main/PRIVACY.md
 - Source: https://github.com/RobinPourtaud/sideline
 
+## Localization
+
+Use `store-titles.json` and `store-descriptions.json` for natural localized copy. The extension manifest supplies localized names from `public/_locales`. The five numbered screenshots in each `assets/v0.2.0/localized/<locale>` folder include actual translated UI and localized synthetic comments; English stays in the asset root. A separate `pt_PT` set adapts European Portuguese marketing copy while showing the shared Portuguese UI. Chrome and Edge support language-specific screenshot sets. Firefox uses shared screenshot images and localized captions.
+
 ## Images
 
 Use the five numbered PNGs in `assets/v0.2.0` as screenshots, in order. Each is 1280 × 800 and depicts actual Sideline UI. The Chrome small promo is `promo-small.png` (440 × 280); the marquee is `promo-marquee.png` (1400 × 560). The icon is `public/icons/128.png`, with 16px transparent padding around the existing mark. Promotional compositions are conceptual artwork, separate from the screenshots.
@@ -60,3 +64,7 @@ Source archive build steps: Node.js 24+, `npm ci`, `npm run build:firefox`. BUIL
 ## Review state
 
 The repository and GitHub release can be published independently. Store assets and packages are prepared for Robin’s review before store submission unless Robin explicitly requests submission. Store approval and public availability are separate from saving a draft.
+
+## Support contact
+
+Use **sideline@pourtaud.dev** for extension support and store review correspondence. Keep publisher-account and Git attribution emails unchanged.

@@ -21,7 +21,7 @@ export default defineConfig({
     excludeSources: ["docs/assets/**", "playwright-report/**", "test-results/**"],
   },
   manifest: ({ browser }) => ({
-    name: "Sideline",
+    name: "__MSG_extensionName__",
     description: "__MSG_extensionDescription__",
     default_locale: "en",
     permissions: ["storage"],

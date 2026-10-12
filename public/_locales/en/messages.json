@@ -1,5 +1,8 @@
 {
   "extensionDescription": {
     "message": "YouTube comments, on screen."
+  },
+  "extensionName": {
+    "message": "Sideline — Danmaku & Comments for YouTube"
   }
 }

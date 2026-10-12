@@ -1,5 +1,8 @@
 {
   "extensionDescription": {
     "message": "YouTubeのコメントを、画面に。"
+  },
+  "extensionName": {
+    "message": "Sideline — YouTubeの弾幕・コメント表示"
   }
 }

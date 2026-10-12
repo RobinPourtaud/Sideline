@@ -1,5 +1,8 @@
 {
   "extensionDescription": {
     "message": "YouTube 评论，跃然屏上。"
+  },
+  "extensionName": {
+    "message": "Sideline — YouTube 弹幕与评论"
   }
 }
