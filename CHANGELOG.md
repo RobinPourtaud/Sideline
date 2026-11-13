@@ -16,6 +16,7 @@
 
 - Reclaim unused chat space beside the video in theater/fullscreen mode and below it, including after fullscreen transitions, while preserving open playlists and engagement panels.
 - Keep existing chat-box rows and images in place when new messages arrive or repeat/like counts change, avoiding whole-feed redraws and preserving keyboard focus on unchanged rows.
+- Update compatible build/test dependencies to remove the reported high and moderate audit findings. The remaining low-severity development-linter advisory is documented in SECURITY.md; the production dependency audit is clean.
 
 ## 0.2.1 — 2026-10-12
 
