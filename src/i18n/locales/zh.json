@@ -109,5 +109,9 @@
   "Likes: {count}": "点赞：{count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "稀疏模式将重复消息合并并显示 + 次数，记忆持续 60 秒。",
   "Balanced groups matching chat within 5 seconds with a + count.": "适中模式合并 5 秒内的相同聊天消息，并显示 + 次数。",
-  "Lively keeps repeated chat messages separate.": "密集模式单独显示每条重复的聊天消息。"
+  "Lively keeps repeated chat messages separate.": "密集模式单独显示每条重复的聊天消息。",
+  "Sideline quick start": "Sideline 快速入门",
+  "Use the leaf to turn comments on or off.": "点击叶子按钮可开启或关闭评论。",
+  "Use the sliders beside it to change style and settings.": "点击旁边的滑块按钮可更改样式和设置。",
+  "Got it": "知道了"
 }

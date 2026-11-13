@@ -139,6 +139,9 @@ try {
   await script(
     'document.querySelector("sideline-overlay").shadowRoot.querySelector("sideline-launcher").shadowRoot.querySelector("button").click()',
   );
+  await script(
+    'const r=document.querySelector("sideline-overlay").shadowRoot;r.querySelector(".first-use button").click();r.querySelector("sideline-launcher").shadowRoot.querySelectorAll("button")[1].click();r.querySelector(".style-choices [data-value=box]").click();r.querySelector(".customize").click();',
+  );
   await until(
     'return document.querySelector("sideline-overlay").shadowRoot.querySelectorAll(".message").length === 3',
   );

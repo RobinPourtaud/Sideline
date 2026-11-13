@@ -8,13 +8,14 @@ export const defaults: Preferences = {
   translationSource: "ja",
   translationTarget: "en",
   visible: false,
+  onboardingDismissed: false,
   theme: "dark",
-  displayStyle: "box",
+  displayStyle: "scroll",
   scrollArea: "top",
   direction: "rtl",
   speed: 12,
   density: 3,
-  preloadComments: 0,
+  preloadComments: 100,
   fontSize: 14,
   overlayFontSize: 24,
   opacity: 94,
@@ -40,6 +41,7 @@ export function normalizePreferences(value: unknown): Preferences {
     translationSource: language(data.translationSource, defaults.translationSource),
     translationTarget: language(data.translationTarget, defaults.translationTarget),
     visible: typeof data.visible === "boolean" ? data.visible : defaults.visible,
+    onboardingDismissed: data.onboardingDismissed === true,
     theme:
       data.theme === "light" ||
       data.theme === "system" ||
@@ -48,19 +50,20 @@ export function normalizePreferences(value: unknown): Preferences {
         ? data.theme
         : "dark",
     displayStyle:
+      data.displayStyle === "box" ||
       data.displayStyle === "scroll" ||
       data.displayStyle === "top" ||
       data.displayStyle === "bottom"
         ? data.displayStyle
-        : "box",
+        : defaults.displayStyle,
     scrollArea:
       data.scrollArea === "bottom" || data.scrollArea === "full" ? data.scrollArea : "top",
     direction: data.direction === "ltr" ? "ltr" : "rtl",
     speed: number("speed", 6, 20),
     density: Math.round(number("density", 1, 6)),
-    preloadComments: [100, 300, 500].includes(data.preloadComments as number)
+    preloadComments: [0, 100, 300, 500].includes(data.preloadComments as number)
       ? (data.preloadComments as number)
-      : 0,
+      : defaults.preloadComments,
     fontSize: number("fontSize", 12, 32),
     overlayFontSize: number("overlayFontSize", 12, 32),
     opacity: number("opacity", 10, 100),

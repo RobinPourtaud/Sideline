@@ -109,5 +109,9 @@
   "Likes: {count}": "Me gusta: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "Tranquilo agrupa las repeticiones con un contador + y las recuerda durante 60 segundos.",
   "Balanced groups matching chat within 5 seconds with a + count.": "Equilibrado agrupa los mensajes iguales en 5 segundos con un contador +.",
-  "Lively keeps repeated chat messages separate.": "Animado mantiene separados los mensajes repetidos."
+  "Lively keeps repeated chat messages separate.": "Animado mantiene separados los mensajes repetidos.",
+  "Sideline quick start": "Primeros pasos con Sideline",
+  "Use the leaf to turn comments on or off.": "Usa la hoja para activar o desactivar los comentarios.",
+  "Use the sliders beside it to change style and settings.": "Usa los controles deslizantes de al lado para cambiar el estilo y los ajustes.",
+  "Got it": "Entendido"
 }

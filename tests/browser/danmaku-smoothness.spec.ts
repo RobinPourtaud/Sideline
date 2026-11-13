@@ -1,4 +1,62 @@
 import { expect, test } from "@playwright/test";
+import { chooseControl } from "./controls";
+
+for (const style of ["scroll", "top", "bottom"]) {
+  test(`${style}: new arrivals preserve existing content and animation across box mode switches`, async ({
+    page,
+  }) => {
+    await page.goto("/tests/fixtures/watch.html");
+    await page
+      .frameLocator("#chatframe")
+      .locator("#items")
+      .evaluate((root) => {
+        for (const node of root.querySelectorAll(":scope > :not(#first)")) node.remove();
+      });
+    await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+    await expect(page.locator(".message")).toHaveCount(1);
+    for (let round = 0; round < 2; round++) {
+      await chooseControl(page, "Display as", style);
+      const first = page.locator('.floating-comment[data-message-id="first"]');
+      await expect.poll(() => first.evaluate((node) => !!node.getAnimations()[0])).toBe(true);
+      const retained = await first.evaluateHandle((node) => {
+        const animation = node.getAnimations()[0]!;
+        animation.currentTime = 1000;
+        return { node, body: node.querySelector(".floating-body"), animation };
+      });
+      await page
+        .frameLocator("#chatframe")
+        .locator("#items")
+        .evaluate((root, round) => {
+          root.insertAdjacentHTML(
+            "beforeend",
+            `<yt-live-chat-text-message-renderer id="arrival-${round}"><span id="author-name">Viewer</span><span id="message">New comment ${round}</span></yt-live-chat-text-message-renderer>`,
+          );
+        }, round);
+      await expect(
+        page.locator(`.floating-comment[data-message-id="arrival-${round}"]`),
+      ).toBeVisible();
+      expect(
+        await retained.evaluate(({ node, body, animation }) => ({
+          connected: node.isConnected,
+          bodyRetained: node.querySelector(".floating-body") === body,
+          animationRetained: node.getAnimations()[0] === animation,
+          time: animation.currentTime,
+          state: animation.playState,
+        })),
+      ).toEqual({
+        connected: true,
+        bodyRetained: true,
+        animationRetained: true,
+        time: 1000,
+        state: "paused",
+      });
+      await retained.dispose();
+      await chooseControl(page, "Display as", "box");
+      await expect(page.locator(".floating-comment")).toHaveCount(0);
+      await expect(page.locator(".message")).toHaveCount(round + 2);
+    }
+  });
+}
 
 for (const direction of ["rtl", "ltr"] as const) {
   test(`${direction}: count growth and equivalent wording preserve width, text and animation`, async ({

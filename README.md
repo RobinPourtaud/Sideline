@@ -17,7 +17,7 @@ Follow the conversation while you watch. Sideline brings live chat, replay chat,
 A small, local-first extension for desktop Chrome and Firefox. A [Mac Safari development preview](docs/safari.md) is available to build from source. No Sideline account, backend, analytics, or comment uploads.
 
 <p align="center">
-  <a href="https://github.com/RobinPourtaud/sideline/releases/latest"><strong>Download v0.2.1</strong></a> ·
+  <a href="https://github.com/RobinPourtaud/sideline/releases/latest"><strong>Download v0.3.0</strong></a> ·
   <a href="docs/usage.md">User guide</a> ·
   <a href="https://github.com/RobinPourtaud/sideline/issues">Report a bug</a> ·
   <a href="CONTRIBUTING.md">Contribute</a>
@@ -27,7 +27,7 @@ A small, local-first extension for desktop Chrome and Firefox. A [Mac Safari dev
 
 <img src="docs/assets/v0.2.0/01-scrolling.png" alt="Actual Sideline scrolling comments, including a grouped +39 reaction, over a labelled demonstration video." width="100%">
 
-- **Four ways to watch.** Scrolling danmaku, chat box, top comments, or bottom comments. Motion follows video pause and playback speed.
+- **Four ways to watch.** Scrolling danmaku, chat box, top comments, or bottom comments. Scrolling danmaku is the default. Motion follows video pause and playback speed.
 - **Less repetition, more room.** Quiet remembers matching chat for 60 seconds; Balanced groups five-second bursts; Lively keeps messages separate. Forty matching greetings become one **Hello +39**. Matching ignores case and symbols, and counters update without restarting motion.
 - **Reactions at the right moment.** Loaded timestamped comments appear when playback reaches their reference, with available like counts. Multiple timestamps in one comment become separate moments.
 - **Make it yours.** Forest, Paper, Midnight, and Sakura themes; adjustable text size, opacity, position, scrolling direction, speed, and density.

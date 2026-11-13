@@ -25,16 +25,16 @@ describe("preference migrations and untrusted storage", () => {
       width: 260,
     });
   });
-  it("keeps automatic loading opt-in and accepts only bounded targets", () => {
+  it("defaults to 100 comments while preserving Off and bounded saved targets", () => {
     for (const value of [undefined, -1, 10000, "100", Number.NaN])
-      expect(normalizePreferences({ preloadComments: value }).preloadComments).toBe(0);
+      expect(normalizePreferences({ preloadComments: value }).preloadComments).toBe(100);
     for (const value of [0, 100, 300, 500])
       expect(normalizePreferences({ preloadComments: value }).preloadComments).toBe(value);
   });
   it("migrates old appearance settings and validates display controls", () => {
     expect(normalizePreferences({ theme: "light" })).toMatchObject({
       theme: "light",
-      displayStyle: "box",
+      displayStyle: "scroll",
       overlayFontSize: 24,
     });
     expect(
@@ -47,7 +47,7 @@ describe("preference migrations and untrusted storage", () => {
         overlayFontSize: 200,
       }),
     ).toMatchObject({
-      displayStyle: "box",
+      displayStyle: "scroll",
       direction: "rtl",
       scrollArea: "top",
       density: 6,
@@ -58,6 +58,12 @@ describe("preference migrations and untrusted storage", () => {
       theme: "sakura",
       displayStyle: "bottom",
     });
+    expect(normalizePreferences({ displayStyle: "box", preloadComments: 0 })).toMatchObject({
+      displayStyle: "box",
+      preloadComments: 0,
+    });
+    expect(normalizePreferences({ onboardingDismissed: "true" }).onboardingDismissed).toBe(false);
+    expect(normalizePreferences({ onboardingDismissed: true }).onboardingDismissed).toBe(true);
   });
   it("keeps the whole panel within a smaller player", () => {
     const bounds = panelBounds({ ...defaults, x: 1, y: 1 }, { width: 200, height: 130 });

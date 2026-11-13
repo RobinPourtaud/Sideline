@@ -14,7 +14,13 @@ if (video) Object.defineProperty(video, "duration", { configurable: true, get: (
 if (!query.has("extension")) {
   installCommentPreloadBridge();
   await startApp({
-    read: async () => normalizePreferences(JSON.parse(localStorage.getItem("sideline") ?? "null")),
+    read: async () =>
+      normalizePreferences({
+        ...(query.has("fresh")
+          ? {}
+          : { displayStyle: "box", preloadComments: 0, onboardingDismissed: true }),
+        ...JSON.parse(localStorage.getItem("sideline") ?? "null"),
+      }),
     write: async (preferences) => {
       localStorage.setItem("sideline", JSON.stringify(preferences));
     },

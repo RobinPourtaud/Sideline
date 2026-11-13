@@ -8,7 +8,15 @@ Please report security issues privately through [GitHub’s vulnerability report
 
 Sideline runs on `https://www.youtube.com/*` and requests local storage only. Comment content is rendered with text nodes. Images and channel links use explicit YouTube/Google allowlists. The MAIN-world bridge accepts a fixed load event, not arbitrary code, URLs or continuation payloads. The runtime has no server, analytics, account mutations or remote executable code.
 
-## Toolchain advisory — reviewed 2026-10-11
+## Toolchain audit — reviewed 2026-11-14
+
+The v0.3.0 lockfile updates compatible development dependencies, including Vite 8.3.8, Vitest 5.1.0, node-forge 1.4.3, undici 7.30.2, and fast-uri 3.1.9. The full audit reports no high or moderate findings; `npm audit --omit=dev` reports no findings.
+
+Four low entries represent [GHSA-gcqx-w48m-w2h4](https://github.com/advisories/GHSA-gcqx-w48m-w2h4) in deepmerge 4.3.1 and its propagation through addons-linter, web-ext, and WXT. The advisory concerns prototype poisoning of returned merged objects and lists no patched version. This dependency is part of the development package linter, not an extension entrypoint. The remaining risk is retained in the audit; it is not suppressed or claimed repaired. Reassess when the linter dependency changes, and lint only trusted project packages.
+
+Do not use `npm audit fix --force` to resolve this finding: the suggested web-ext/WXT downgrades are breaking changes, not validated replacements for this build pipeline.
+
+## Historical toolchain advisory — reviewed 2026-10-11
 
 `npm audit` reports GHSA-86w9-cpqp-85rv in node-forge 1.4.0. Four high entries represent the same advisory propagated through `@devicefarmer/adbkit`, `web-ext` and `wxt`, not four independent runtime vulnerabilities.
 

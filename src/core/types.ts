@@ -36,6 +36,7 @@ export interface Preferences {
   translationSource: Language;
   translationTarget: Language;
   visible: boolean;
+  onboardingDismissed: boolean;
   theme: Theme;
   displayStyle: DisplayStyle;
   scrollArea: "top" | "bottom" | "full";

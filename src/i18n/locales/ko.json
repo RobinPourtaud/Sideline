@@ -109,5 +109,9 @@
   "Likes: {count}": "좋아요: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "적게 모드는 반복 메시지를 + 개수로 묶고 60초 동안 기억합니다.",
   "Balanced groups matching chat within 5 seconds with a + count.": "보통 모드는 5초 이내의 동일한 채팅을 + 개수로 묶습니다.",
-  "Lively keeps repeated chat messages separate.": "많이 모드는 반복 채팅 메시지도 개별로 표시합니다."
+  "Lively keeps repeated chat messages separate.": "많이 모드는 반복 채팅 메시지도 개별로 표시합니다.",
+  "Sideline quick start": "Sideline 시작하기",
+  "Use the leaf to turn comments on or off.": "나뭇잎 버튼으로 댓글 표시를 켜거나 끌 수 있어요.",
+  "Use the sliders beside it to change style and settings.": "옆의 슬라이더 버튼으로 스타일과 설정을 바꿀 수 있어요.",
+  "Got it": "알겠어요"
 }

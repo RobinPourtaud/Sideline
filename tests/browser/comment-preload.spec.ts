@@ -126,6 +126,17 @@ test("missing handlers stop with an honest partial count and never expand replie
   await expect(page.locator("ytd-comments")).not.toHaveAttribute("data-reply-request");
 });
 
+test("fresh defaults preload 100 comments without selecting a target", async ({ page }) => {
+  await page.goto("/tests/fixtures/watch.html?fresh");
+  await installLoader(page, 100);
+  await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+  await expect(page.locator("ytd-comments:not([hidden]) ytd-comment-thread-renderer")).toHaveCount(
+    100,
+  );
+  await expect(page.locator("ytd-comments:not([hidden])")).toHaveAttribute("data-requests", "5");
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+});
+
 test("saved auto-load starts on the next video without pressing a load button", async ({
   page,
 }) => {
