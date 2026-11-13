@@ -38,15 +38,27 @@ export class ChatPresentation {
     const rect = target.getBoundingClientRect();
     this.target = target;
     this.previous = { ariaHidden: target.getAttribute("aria-hidden"), inert: target.inert };
+    const hiddenChatWatch = `:is(ytd-watch-flexy, ytd-watch-grid, ytd-watch-learning-journey):not([engagement-panel-expanded]):not([playlist-panel-expanded]):has([${marker}]):not(:has(ytd-engagement-panel-section-list-renderer[visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]))`;
+    const widePlayer = `${hiddenChatWatch}:is([fullscreen], [theater]) #full-bleed-container`;
     this.style.textContent = `[${marker}] {
       position: fixed !important; top: 0 !important; right: 0 !important; left: auto !important;
       width: ${Math.max(300, rect.width)}px !important;
       height: ${Math.max(400, rect.height)}px !important;
       margin: 0 !important; opacity: 0 !important; pointer-events: none !important;
     }
-    :is(ytd-watch-flexy, ytd-watch-grid, ytd-watch-learning-journey)[fullscreen]:not([engagement-panel-expanded]):not([playlist-panel-expanded])
-      #panels-full-bleed-container:has([${marker}]) {
-      width: 0 !important; min-width: 0 !important; flex-basis: 0 !important;
+    ${widePlayer} #panels-full-bleed-container {
+      width: 0 !important; min-width: 0 !important; max-width: 0 !important;
+      flex: 0 0 0 !important; margin: 0 !important; padding: 0 !important;
+    }
+    ${widePlayer} #player-full-bleed-container {
+      width: 100% !important; max-width: 100% !important; min-width: 0 !important;
+      flex: 1 1 0% !important;
+    }
+    ${widePlayer} #player-full-bleed-container #movie_player {
+      width: 100% !important; max-width: 100% !important;
+    }
+    ${hiddenChatWatch}[fixed-panels] #columns {
+      padding-right: 0 !important;
     }`;
     document.documentElement.append(this.style);
     target.setAttribute(marker, "");

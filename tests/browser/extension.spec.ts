@@ -40,6 +40,9 @@ test("installed Chrome extension injects on YouTube and persists real extension 
     const page = await context.newPage();
     await page.goto("https://www.youtube.com/watch?v=fixture");
     await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+    await page.getByRole("button", { name: "Got it", exact: true }).click();
+    await chooseControl(page, "Display as", "box");
+    await page.getByRole("button", { name: "Done", exact: true }).click();
     await page.locator("sideline-overlay .panel").hover();
     await expect(page.locator("sideline-overlay .message")).toHaveCount(3);
     await page.locator("sideline-overlay .panel").hover();
@@ -128,6 +131,9 @@ test("installed Chrome tabs merge concurrent settings and update without reload"
       second.goto("https://www.youtube.com/watch?v=fixture"),
     ]);
     await first.getByRole("button", { name: "Open Sideline", exact: true }).click();
+    await first.getByRole("button", { name: "Got it", exact: true }).click();
+    await chooseControl(first, "Display as", "box");
+    await first.getByRole("button", { name: "Done", exact: true }).click();
     await expect(
       second.getByRole("button", { name: "Turn off Sideline", exact: true }),
     ).toBeVisible();

@@ -109,5 +109,9 @@
   "Likes: {count}": "Gefällt mir: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "Wenig fasst Wiederholungen mit einem +-Zähler zusammen und merkt sie sich 60 Sekunden lang.",
   "Balanced groups matching chat within 5 seconds with a + count.": "Ausgewogen fasst gleiche Chatnachrichten innerhalb von 5 Sekunden mit einem +-Zähler zusammen.",
-  "Lively keeps repeated chat messages separate.": "Viel zeigt wiederholte Chatnachrichten einzeln."
+  "Lively keeps repeated chat messages separate.": "Viel zeigt wiederholte Chatnachrichten einzeln.",
+  "Sideline quick start": "Sideline-Kurzanleitung",
+  "Use the leaf to turn comments on or off.": "Mit dem Blatt schaltest du Kommentare ein oder aus.",
+  "Use the sliders beside it to change style and settings.": "Mit den Reglern daneben änderst du Stil und Einstellungen.",
+  "Got it": "Verstanden"
 }

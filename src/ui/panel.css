@@ -18,6 +18,35 @@
 [hidden] {
   display: none !important;
 }
+.first-use {
+  position: absolute;
+  z-index: 2;
+  padding: 14px;
+  overflow: auto;
+  border: 1px solid #ffffff30;
+  border-radius: 12px;
+  background: #111a19;
+  color: #f0f5f2;
+  box-shadow: 0 6px 24px #0005;
+  pointer-events: auto;
+  direction: inherit;
+}
+.first-use-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+.first-use button {
+  display: block;
+  margin-inline-start: auto;
+  padding: 0 12px;
+  background: #b7f5d0;
+  color: #172c24;
+}
+.first-use button:hover {
+  background: #d6ffe5;
+}
 button,
 input,
 select {

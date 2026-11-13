@@ -1,4 +1,4 @@
-# Sideline v0.2.1 — store listing
+# Sideline v0.3.0 — store listing
 
 ## Title
 
@@ -30,7 +30,7 @@ LOCAL BY DESIGN
 No Sideline account, backend, analytics, or comment uploads. Preferences stay in local extension storage; comments, repeat memory, and translations stay in memory for the video session. Sideline never posts, likes, subscribes, or changes your YouTube account data. Avatars and emoji can load from YouTube/Google image servers. Translation may download browser-provided language packs.
 
 GET STARTED
-Open or reload a YouTube watch page and click the Sideline icon in the playback controls. Use the adjacent settings button to customize your view. Optional automatic comment loading asks YouTube’s existing loader for more batches without scrolling; it defaults to Off.
+Open or reload a YouTube watch page and click the Sideline icon in the playback controls. Use the adjacent settings button to customize your view. Optional automatic comment loading asks YouTube’s existing loader for more batches without scrolling; it defaults to 100 comments while Sideline is on and can be switched Off.
 
 OPEN SOURCE, OPEN TO CONTRIBUTIONS
 About half of Sideline was vibe-coded with AI assistance. The code is open for inspection and improvement, and all contributions are welcome: bug reports, translations, cleanup, design, and browser testing.

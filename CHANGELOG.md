@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0 — 2026-11-14
+
+### Added
+
+- Show a small, dismissible guide to the player’s on/off and settings buttons the first time Sideline is enabled. The guide is localized in all ten interface languages, and dismissal is remembered across videos.
+- Include the Mac Safari extension wrapper, setup app, build instructions, and packaging checks in the source tree. Safari app distribution remains separate from this Chrome/Firefox release; iPhone and iPad are not supported.
+
+### Changed
+
+- Use scrolling danmaku and a 100-comment automatic-loading target when no saved choice exists. Loading runs only while Sideline is enabled and depends on the comments YouTube makes available; it does not include replies or guarantee 100 comments.
+- Preserve existing saved display and loading choices, including Chat box and automatic loading Off. Sideline still starts disabled on a fresh installation.
+
+### Fixed
+
+- Reclaim unused chat space beside the video in theater/fullscreen mode and below it, including after fullscreen transitions, while preserving open playlists and engagement panels.
+- Keep existing chat-box rows and images in place when new messages arrive or repeat/like counts change, avoiding whole-feed redraws and preserving keyboard focus on unchanged rows.
+
 ## 0.2.1 — 2026-10-12
 
 - Reduce the leaf by 20% across icons, player controls, and artwork while preserving button sizes.

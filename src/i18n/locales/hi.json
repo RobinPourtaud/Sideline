@@ -109,5 +109,9 @@
   "Likes: {count}": "पसंद: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "कम मोड दोहराए गए संदेशों को + गिनती के साथ जोड़ता है और 60 सेकंड तक याद रखता है।",
   "Balanced groups matching chat within 5 seconds with a + count.": "संतुलित मोड 5 सेकंड के भीतर आए एक जैसे संदेशों को + गिनती के साथ जोड़ता है।",
-  "Lively keeps repeated chat messages separate.": "ज़्यादा मोड दोहराए गए चैट संदेशों को अलग-अलग दिखाता है।"
+  "Lively keeps repeated chat messages separate.": "ज़्यादा मोड दोहराए गए चैट संदेशों को अलग-अलग दिखाता है।",
+  "Sideline quick start": "Sideline की शुरुआत",
+  "Use the leaf to turn comments on or off.": "टिप्पणियाँ चालू या बंद करने के लिए पत्ती वाले बटन का उपयोग करें।",
+  "Use the sliders beside it to change style and settings.": "शैली और सेटिंग बदलने के लिए उसके बगल में स्लाइडर वाला बटन दबाएँ।",
+  "Got it": "समझ गया"
 }

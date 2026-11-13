@@ -109,5 +109,9 @@
   "Likes: {count}": "الإعجابات: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "يجمع خيار «قليلة» الرسائل المكررة مع عدّاد + ويتذكرها لمدة 60 ثانية.",
   "Balanced groups matching chat within 5 seconds with a + count.": "يجمع خيار «متوازنة» الرسائل المتطابقة خلال 5 ثوانٍ مع عدّاد +.",
-  "Lively keeps repeated chat messages separate.": "يعرض خيار «كثيفة» رسائل الدردشة المكررة بشكل منفصل."
+  "Lively keeps repeated chat messages separate.": "يعرض خيار «كثيفة» رسائل الدردشة المكررة بشكل منفصل.",
+  "Sideline quick start": "البدء مع Sideline",
+  "Use the leaf to turn comments on or off.": "استخدم زر الورقة لتشغيل التعليقات أو إيقافها.",
+  "Use the sliders beside it to change style and settings.": "استخدم زر أشرطة التمرير المجاور لتغيير النمط والإعدادات.",
+  "Got it": "فهمت"
 }

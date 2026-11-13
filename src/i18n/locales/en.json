@@ -109,5 +109,9 @@
   "Likes: {count}": "Likes: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "Quiet groups repeats with a + count and remembers them for 60 seconds.",
   "Balanced groups matching chat within 5 seconds with a + count.": "Balanced groups matching chat within 5 seconds with a + count.",
-  "Lively keeps repeated chat messages separate.": "Lively keeps repeated chat messages separate."
+  "Lively keeps repeated chat messages separate.": "Lively keeps repeated chat messages separate.",
+  "Sideline quick start": "Sideline quick start",
+  "Use the leaf to turn comments on or off.": "Use the leaf to turn comments on or off.",
+  "Use the sliders beside it to change style and settings.": "Use the sliders beside it to change style and settings.",
+  "Got it": "Got it"
 }

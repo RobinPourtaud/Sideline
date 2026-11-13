@@ -6,7 +6,7 @@ Updated: 2026-10-04
 
 Read comments from YouTube’s existing DOM. Do not call the Data API or private endpoints directly, force scrolling, or create extra chat frames. Optional auto-loading invokes YouTube’s existing continuation handler, in the MAIN world, without accepting caller-supplied endpoints or commands. Keep each collection adapter replaceable.
 
-Auto-loading is Off by default. Saved targets of 100, 300 or 500 apply while Sideline is enabled. Batches keep the current YouTube sort, exclude replies, stop after six seconds without progress or thirty seconds overall, and report the actual loaded count. Off suspends collection and automatic loading. Resuming rescans existing sources.
+Auto-loading defaults to 100 comments while Sideline is enabled; choose Off to disable it. Saved targets of 100, 300 or 500 apply while Sideline is enabled. Batches keep the current YouTube sort, exclude replies, stop after six seconds without progress or thirty seconds overall, and report the actual loaded count. Off suspends collection and automatic loading. Resuming rescans existing sources.
 
 ## Policy status
 

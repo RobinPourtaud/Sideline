@@ -12,7 +12,7 @@ import { FloatingComments } from "./floating-comments";
 import { attachInteraction } from "./interaction";
 import { Launcher } from "./launcher";
 import { mark, settingsMark } from "./mark";
-import { messageRow } from "./message";
+import { messageRow, updateMessageCounts } from "./message";
 import css from "./panel.css?inline";
 
 export interface PanelState {
@@ -53,6 +53,7 @@ export class Panel {
   private feedSize = "";
   private settingsOpen = false;
   private lastMessages = "";
+  private readonly rows = new Map<string, { node: HTMLLIElement; signature: string }>();
   private latest?: PanelState;
   private area = { width: 0, height: 0 };
   private preferences: Preferences;
@@ -60,6 +61,7 @@ export class Panel {
   private translationButton?: HTMLButtonElement;
   private readonly translationStatus = element("p", "settings-note");
   private readonly preloadStatus = element("p", "settings-note");
+  private readonly firstUse = element("aside", "first-use");
 
   constructor(
     parent: HTMLElement,
@@ -101,6 +103,28 @@ export class Panel {
     this.activation = new Launcher(this.launcher, this.playerSettings);
     this.activation.host.lang = this.i18n.locale;
     this.activation.host.dir = this.i18n.direction;
+    this.firstUse.setAttribute("aria-label", this.i18n.t("Sideline quick start"));
+    this.firstUse.setAttribute("role", "region");
+    const toggleTip = element("p", "first-use-row");
+    toggleTip.append(
+      mark(document),
+      element("span", "", this.i18n.t("Use the leaf to turn comments on or off.")),
+    );
+    const settingsTip = element("p", "first-use-row");
+    settingsTip.append(
+      settingsMark(document),
+      element("span", "", this.i18n.t("Use the sliders beside it to change style and settings.")),
+    );
+    const dismissTip = button(this.i18n.t("Got it"), this.i18n.t("Got it"), () => {
+      this.update({ onboardingDismissed: true }, true);
+      this.launcher.focus({ preventScroll: true });
+    });
+    this.firstUse.append(
+      element("strong", "", this.i18n.t("Sideline quick start")),
+      toggleTip,
+      settingsTip,
+      dismissTip,
+    );
     const header = element("header", "header");
     const move = button(this.i18n.t("Move panel"), "", () => {});
     move.className = "move";
@@ -157,7 +181,7 @@ export class Panel {
     done.className = "customize";
     settingsHeader.append(element("h2", "customization-title", this.i18n.t("Customize")), done);
     this.customization.append(settingsHeader, this.settings);
-    this.root.append(this.floating.host, this.panel, this.customization);
+    this.root.append(this.floating.host, this.panel, this.customization, this.firstUse);
     for (const event of [
       "keydown",
       "keyup",
@@ -175,6 +199,10 @@ export class Panel {
       if (key.key === "Escape" && this.settingsOpen) {
         key.preventDefault();
         this.toggleSettings();
+      } else if (key.key === "Escape" && !this.firstUse.hidden) {
+        key.preventDefault();
+        this.update({ onboardingDismissed: true }, true);
+        this.launcher.focus({ preventScroll: true });
       }
     });
     attachInteraction(
@@ -222,6 +250,7 @@ export class Panel {
     const floating = prefs.displayStyle !== "box";
     this.panel.hidden = !prefs.visible || floating;
     this.customization.hidden = !prefs.visible || !this.settingsOpen;
+    this.firstUse.hidden = !prefs.visible || prefs.onboardingDismissed || this.settingsOpen;
     this.activation.host.dataset.boxActive = String(prefs.visible && !floating);
     this.playerSettings.hidden = !prefs.visible;
     this.playerSettings.setAttribute("aria-expanded", String(this.settingsOpen));
@@ -241,6 +270,7 @@ export class Panel {
     this.feed.hidden = false;
     if (!prefs.visible || floating) {
       this.list.replaceChildren();
+      this.rows.clear();
       this.lastMessages = "";
     }
     if (!prefs.visible) {
@@ -272,6 +302,27 @@ export class Panel {
       left: `${bounds.left}px`,
       top: `${bounds.top}px`,
     });
+    this.positionFirstUse();
+  }
+
+  private positionFirstUse() {
+    if (this.firstUse.hidden) return;
+    const host = this.host.getBoundingClientRect();
+    const controls = this.activation.host.getBoundingClientRect();
+    const above = this.activation.host.dataset.docked === "true";
+    const width = Math.min(300, Math.max(0, host.width - 16));
+    const center = controls.left - host.left + controls.width / 2;
+    const left = Math.max(8, Math.min(center - width / 2, host.width - width - 8));
+    this.firstUse.style.width = `${width}px`;
+    this.firstUse.style.left = `${left}px`;
+    const availableHeight = above
+      ? controls.top - host.top - 20
+      : host.bottom - controls.bottom - 20;
+    this.firstUse.style.maxHeight = `${Math.max(0, availableHeight)}px`;
+    const top = above
+      ? controls.top - host.top - this.firstUse.offsetHeight - 12
+      : controls.bottom - host.top + 12;
+    this.firstUse.style.top = `${Math.max(8, Math.min(top, host.height - this.firstUse.offsetHeight - 8))}px`;
   }
 
   openSettings(language = false) {
@@ -440,25 +491,44 @@ export class Panel {
       this.preferences,
     );
     if (this.preferences.displayStyle !== "box") return;
-    const signature = JSON.stringify(
+    const signature = JSON.stringify([
+      this.preferences.translationTarget,
       messages.map((message) => [message, this.translation?.get(message.text)]),
-    );
+    ]);
     if (signature === this.lastMessages) return;
     this.lastMessages = signature;
     const follow = this.following;
     const previousScroll = this.feed.scrollTop;
-    const fragment = document.createDocumentFragment();
-    for (const message of messages) {
-      fragment.append(
-        messageRow(
-          message,
-          this.translation?.get(message.text),
-          this.preferences.translationTarget,
-          this.i18n,
-        ),
-      );
+    const ids = new Set(messages.map((message) => message.id));
+    for (const [id, row] of this.rows) {
+      if (ids.has(id)) continue;
+      row.node.remove();
+      this.rows.delete(id);
     }
-    this.list.replaceChildren(fragment);
+    let next = this.list.firstElementChild;
+    for (const message of messages) {
+      const { repeatCount: _repeats, likes: _likes, ...content } = message;
+      const translated = this.translation?.get(message.text);
+      const signature = JSON.stringify([content, translated, this.preferences.translationTarget]);
+      let row = this.rows.get(message.id);
+      if (!row || row.signature !== signature) {
+        const node = messageRow(message, translated, this.preferences.translationTarget, this.i18n);
+        if (row) {
+          if (next === row.node) next = node;
+          row.node.replaceWith(node);
+        }
+        row = { node, signature };
+        this.rows.set(message.id, row);
+      } else {
+        updateMessageCounts(
+          row.node.querySelector<HTMLElement>(".message-counts")!,
+          message,
+          this.i18n,
+        );
+      }
+      if (row.node !== next) this.list.insertBefore(row.node, next);
+      next = row.node.nextElementSibling;
+    }
     this.feed.scrollTop = follow ? this.feed.scrollHeight : previousScroll;
   }
 
@@ -489,6 +559,7 @@ export class Panel {
   mount(parent: HTMLElement) {
     if (this.host.parentElement !== parent) parent.append(this.host);
     this.activation.mount(parent, this.root);
+    this.positionFirstUse();
   }
 
   releaseTranslation() {

@@ -82,63 +82,131 @@ test("activation opens the existing collapsed chat once and conceals its outer c
   await expect(page.locator("#chatframe")).toHaveCount(1);
 });
 
-test("fullscreen releases the native chat column and restores it without unloading chat", async ({
+for (const chatLocation of ["panel", "columns", "columns-with-hidden-panels"] as const) {
+  for (const mode of ["fullscreen", "theater"] as const) {
+    test(`${mode} reclaims a fixed player width with chat in ${chatLocation}`, async ({ page }) => {
+      await page.goto("/tests/fixtures/watch.html");
+      await page.locator("#chatframe").evaluate((frame, chatLocation) => {
+        const watch = document.createElement("ytd-watch-flexy");
+        watch.innerHTML =
+          '<div id="full-bleed-container" style="display:flex;width:800px"><div id="player-full-bleed-container" style="flex:0 0 auto;width:500px;max-width:500px;min-width:0"></div><div id="panels-full-bleed-container" style="width:300px;min-width:300px"><div id="chat-container"></div></div></div>';
+        const player = document.querySelector("#movie_player")!;
+        player.before(watch);
+        watch.querySelector("#player-full-bleed-container")!.append(player);
+        (player as HTMLElement).style.width = "500px";
+        window.addEventListener("resize", () => {
+          (player as HTMLElement).dataset.resizedWidth = String(
+            player.getBoundingClientRect().width,
+          );
+        });
+        watch.querySelector("#chat-container")!.append(frame);
+        if (chatLocation !== "panel") {
+          const columns = document.createElement("div");
+          columns.id = "columns";
+          watch.append(columns);
+          columns.append(watch.querySelector("#chat-container")!);
+          if (chatLocation === "columns-with-hidden-panels") {
+            watch.querySelector("#panels-full-bleed-container")!.innerHTML =
+              '<div id="panels" style="display:none"><ytd-engagement-panel-section-list-renderer visibility="ENGAGEMENT_PANEL_VISIBILITY_HIDDEN"></ytd-engagement-panel-section-list-renderer></div><ytd-playlist-panel-renderer style="display:none"></ytd-playlist-panel-renderer>';
+          }
+        }
+        document.addEventListener("fullscreenchange", () =>
+          watch.toggleAttribute("fullscreen", Boolean(document.fullscreenElement)),
+        );
+      }, chatLocation);
+      const column = page.locator("#panels-full-bleed-container");
+      const playerArea = page.locator("#player-full-bleed-container");
+      await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
+      await expect(page.locator(".message")).toHaveCount(3);
+      await expect(column).toHaveCSS("width", "300px");
+      await page.locator("ytd-watch-flexy").evaluate((node, mode) => {
+        if (mode === "fullscreen") return node.requestFullscreen();
+        node.setAttribute("theater", "");
+      }, mode);
+      await expect(column).toHaveCSS("width", "0px");
+      await expect(playerArea).toHaveCSS("width", "800px");
+      await expect(page.locator("#movie_player")).toHaveAttribute("data-resized-width", "800");
+      if (chatLocation === "columns-with-hidden-panels") {
+        const engagement = page.locator("ytd-engagement-panel-section-list-renderer");
+        await engagement.evaluate((node) =>
+          node.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"),
+        );
+        await expect(column).toHaveCSS("width", "300px");
+        await engagement.evaluate((node) =>
+          node.setAttribute("visibility", "ENGAGEMENT_PANEL_VISIBILITY_HIDDEN"),
+        );
+        await expect(column).toHaveCSS("width", "0px");
+      }
+      await page
+        .frameLocator("#chatframe")
+        .locator("#items")
+        .evaluate((root) => {
+          const item = document.createElement("yt-live-chat-text-message-renderer");
+          item.id = "fullscreen-source";
+          item.innerHTML =
+            '<span id="author-name">Viewer</span><span id="message">Fullscreen still receives chat</span>';
+          root.append(item);
+        });
+      await expect(page.locator(".message")).toHaveCount(4);
+      for (const attribute of ["engagement-panel-expanded", "playlist-panel-expanded"]) {
+        await page
+          .locator("ytd-watch-flexy")
+          .evaluate((node, attribute) => node.setAttribute(attribute, ""), attribute);
+        await expect(column).toHaveCSS("width", "300px");
+        await expect(playerArea).toHaveCSS("width", "500px");
+        await expect(page.locator("#movie_player")).toHaveCSS("width", "500px");
+        await page
+          .locator("ytd-watch-flexy")
+          .evaluate((node, attribute) => node.removeAttribute(attribute), attribute);
+        await expect(column).toHaveCSS("width", "0px");
+        await expect(playerArea).toHaveCSS("width", "800px");
+      }
+      await page.locator("ytd-watch-flexy").evaluate((node, mode) => {
+        if (mode === "fullscreen") return document.exitFullscreen();
+        node.removeAttribute("theater");
+      }, mode);
+      await expect(column).toHaveCSS("width", "300px");
+      await page.locator("ytd-watch-flexy").evaluate((node, mode) => {
+        if (mode === "fullscreen") return node.requestFullscreen();
+        node.setAttribute("theater", "");
+      }, mode);
+      await expect(column).toHaveCSS("width", "0px");
+      await page.locator(".panel").hover();
+      await page.getByRole("button", { name: "Hide Sideline", exact: true }).click();
+      await expect(column).toHaveCSS("width", "300px");
+      await expect(page.frameLocator("#chatframe").locator("#fullscreen-source")).toHaveCount(1);
+      await expect(page.locator("#movie_player")).toHaveAttribute("data-resized-width", "500");
+    });
+  }
+}
+
+test("hidden fixed chat releases the column below the player and restores it when needed", async ({
   page,
 }) => {
   await page.goto("/tests/fixtures/watch.html");
   await page.locator("#chatframe").evaluate((frame) => {
     const watch = document.createElement("ytd-watch-flexy");
+    watch.setAttribute("fixed-panels", "");
     watch.innerHTML =
-      '<div id="full-bleed-container" style="display:flex;width:800px"><div id="player-full-bleed-container" style="flex:1;min-width:0"></div><div id="panels-full-bleed-container" style="width:300px;min-width:300px"><div id="chat-container"></div></div></div>';
-    const player = document.querySelector("#movie_player")!;
-    player.before(watch);
-    watch.querySelector("#player-full-bleed-container")!.append(player);
-    (player as HTMLElement).style.width = "100%";
-    window.addEventListener("resize", () => {
-      (player as HTMLElement).dataset.resizedWidth = String(player.getBoundingClientRect().width);
-    });
+      '<div id="columns" style="display:flex;width:800px;padding-right:300px"><div id="primary" style="flex:1;min-width:0">Video details</div><div id="chat-container" style="position:fixed"></div></div>';
+    frame.before(watch);
     watch.querySelector("#chat-container")!.append(frame);
-    document.addEventListener("fullscreenchange", () =>
-      watch.toggleAttribute("fullscreen", Boolean(document.fullscreenElement)),
-    );
   });
-  const column = page.locator("#panels-full-bleed-container");
-  const playerArea = page.locator("#player-full-bleed-container");
+  const primary = page.locator("#primary");
+  const watch = page.locator("ytd-watch-flexy");
+  await expect(primary).toHaveCSS("width", "500px");
   await page.getByRole("button", { name: "Open Sideline", exact: true }).click();
-  await expect(page.locator(".message")).toHaveCount(3);
-  await expect(column).toHaveCSS("width", "300px");
-  await page.locator("ytd-watch-flexy").evaluate((node) => node.requestFullscreen());
-  await expect(column).toHaveCSS("width", "0px");
-  await expect(playerArea).toHaveCSS("width", "800px");
-  await expect(page.locator("#movie_player")).toHaveAttribute("data-resized-width", "800");
-  await page
-    .frameLocator("#chatframe")
-    .locator("#items")
-    .evaluate((root) => {
-      const item = document.createElement("yt-live-chat-text-message-renderer");
-      item.id = "fullscreen-source";
-      item.innerHTML =
-        '<span id="author-name">Viewer</span><span id="message">Fullscreen still receives chat</span>';
-      root.append(item);
-    });
-  await expect(page.locator(".message")).toHaveCount(4);
-  await page
-    .locator("ytd-watch-flexy")
-    .evaluate((node) => node.setAttribute("engagement-panel-expanded", ""));
-  await expect(column).toHaveCSS("width", "300px");
-  await page
-    .locator("ytd-watch-flexy")
-    .evaluate((node) => node.removeAttribute("engagement-panel-expanded"));
-  await expect(column).toHaveCSS("width", "0px");
-  await page.evaluate(() => document.exitFullscreen());
-  await expect(column).toHaveCSS("width", "300px");
-  await page.locator("ytd-watch-flexy").evaluate((node) => node.requestFullscreen());
-  await expect(column).toHaveCSS("width", "0px");
+  await expect(primary).toHaveCSS("width", "800px");
+  for (const attribute of ["engagement-panel-expanded", "playlist-panel-expanded"]) {
+    await watch.evaluate((node, attribute) => node.setAttribute(attribute, ""), attribute);
+    await expect(primary).toHaveCSS("width", "500px");
+    await watch.evaluate((node, attribute) => node.removeAttribute(attribute), attribute);
+    await expect(primary).toHaveCSS("width", "800px");
+  }
   await page.locator(".panel").hover();
   await page.getByRole("button", { name: "Hide Sideline", exact: true }).click();
-  await expect(column).toHaveCSS("width", "300px");
-  await expect(page.frameLocator("#chatframe").locator("#fullscreen-source")).toHaveCount(1);
-  await expect(page.locator("#movie_player")).toHaveAttribute("data-resized-width", "500");
+  await expect(primary).toHaveCSS("width", "500px");
+  await expect(page.locator("#chatframe")).toHaveCount(1);
 });
 
 test("native chat is hidden before preferences resolve and late chat stays hidden until switched off", async ({

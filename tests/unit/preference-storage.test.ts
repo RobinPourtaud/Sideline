@@ -7,13 +7,13 @@ import {
 import { defaults } from "../../src/core/preferences";
 
 it("preserves unrelated writes from tabs with stale snapshots in either order", () => {
-  const first = preferenceRecords(preferencePatch(defaults, { ...defaults, preloadComments: 100 }));
+  const first = preferenceRecords(preferencePatch(defaults, { ...defaults, preloadComments: 300 }));
   const second = preferenceRecords(preferencePatch(defaults, { ...defaults, fontSize: 20 }));
   for (const records of [
     { ...first, ...second },
     { ...second, ...first },
   ]) {
-    expect(storedPreferences(records)).toMatchObject({ preloadComments: 100, fontSize: 20 });
+    expect(storedPreferences(records)).toMatchObject({ preloadComments: 300, fontSize: 20 });
   }
 });
 it("reads legacy preferences without writing a stale migration snapshot", () => {
@@ -26,6 +26,22 @@ it("reads legacy preferences without writing a stale migration snapshot", () => 
     visible: true,
     fontSize: 24,
   });
+});
+it("uses new install defaults but preserves saved box, Off and guide dismissal", () => {
+  expect(storedPreferences({})).toMatchObject({
+    displayStyle: "scroll",
+    preloadComments: 100,
+    onboardingDismissed: false,
+  });
+  for (const records of [
+    { preferences: { displayStyle: "box", preloadComments: 0, onboardingDismissed: true } },
+    preferenceRecords({ displayStyle: "box", preloadComments: 0, onboardingDismissed: true }),
+  ])
+    expect(storedPreferences(records)).toMatchObject({
+      displayStyle: "box",
+      preloadComments: 0,
+      onboardingDismissed: true,
+    });
 });
 it("validates field values and ignores unknown records", () => {
   expect(

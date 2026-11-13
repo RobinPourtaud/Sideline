@@ -109,5 +109,9 @@
   "Likes: {count}": "高評価: {count}",
   "Quiet groups repeats with a + count and remembers them for 60 seconds.": "「少なめ」では、同じメッセージを＋件数でまとめ、60秒間記憶します。",
   "Balanced groups matching chat within 5 seconds with a + count.": "「標準」では、5秒以内の同じメッセージを＋件数でまとめます。",
-  "Lively keeps repeated chat messages separate.": "「多め」では、同じチャットメッセージも個別に表示します。"
+  "Lively keeps repeated chat messages separate.": "「多め」では、同じチャットメッセージも個別に表示します。",
+  "Sideline quick start": "Sidelineの使い方",
+  "Use the leaf to turn comments on or off.": "葉のボタンでコメント表示をオン・オフにできます。",
+  "Use the sliders beside it to change style and settings.": "隣のスライダーボタンで表示スタイルや設定を変更できます。",
+  "Got it": "わかりました"
 }
