@@ -4,5 +4,8 @@
   },
   "extensionName": {
     "message": "Sideline — Chat y comentarios en vídeos de YouTube"
+  },
+  "safariExtensionName": {
+    "message": "Sideline — Comentarios de YouTube"
   }
 }

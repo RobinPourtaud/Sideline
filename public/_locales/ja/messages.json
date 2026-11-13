@@ -4,5 +4,8 @@
   },
   "extensionName": {
     "message": "Sideline — YouTubeの弾幕・コメント表示"
+  },
+  "safariExtensionName": {
+    "message": "Sideline — YouTubeのコメント"
   }
 }

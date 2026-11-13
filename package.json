@@ -22,6 +22,9 @@
     "test:firefox-extension": "node scripts/firefox-smoke.mjs",
     "icons": "node scripts/icons.mjs",
     "assets:store": "node scripts/store-assets.mjs",
+    "build:safari": "wxt build -b safari --mv3",
+    "zip:safari": "wxt zip -b safari --mv3",
+    "icons:safari": "node scripts/safari-icons.mjs",
     "assets:store:all": "node scripts/store-assets-all.mjs"
   },
   "devDependencies": {
